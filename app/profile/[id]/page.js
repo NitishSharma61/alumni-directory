@@ -75,7 +75,7 @@ export default function ProfilePage() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
           </svg>
           <h3 className="text-lg font-semibold text-primary mb-2">Profile not found</h3>
-          <p className="text-sm text-secondary mb-6">This alumni profile doesn't exist or has been removed.</p>
+          <p className="text-sm text-secondary mb-6">This alumni profile doesn&apos;t exist or has been removed.</p>
           <Link
             href="/dashboard"
             className="btn-primary"
@@ -173,7 +173,7 @@ export default function ProfilePage() {
                 <h3 className="text-sm font-semibold uppercase tracking-wider mb-4" style={{color: 'var(--foreground-tertiary)'}}>About</h3>
                 <div style={{background: 'var(--background-tertiary)', padding: '1.5rem', borderRadius: 'var(--radius)', marginBottom: '2rem'}}>
                   <p style={{color: 'var(--foreground-secondary)', fontSize: '1rem', lineHeight: 1.7}}>
-                    This alumni hasn't added a bio yet.
+                    This alumni hasn&apos;t added a bio yet.
                   </p>
                 </div>
               </div>

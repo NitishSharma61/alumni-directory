@@ -52,7 +52,7 @@ export default function LoginPage() {
                 Sign in to Alumni Directory
               </p>
               <p className="mt-6" style={{color: 'var(--foreground-tertiary)', fontSize: '0.9375rem'}}>
-                Don't have an account?{' '}
+                Don&apos;t have an account?{' '}
                 <Link href="/signup" className="font-medium transition-colors duration-200" style={{color: 'var(--primary)'}}>
                   Create one here
                 </Link>
