@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter, usePathname } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import MobileNav from './MobileNav'
@@ -76,9 +77,11 @@ export default function Header() {
           {/* Left side - Logo and title */}
           <div className="flex items-center" style={{gap: '0.75rem'}}>
             <Link href="/dashboard" style={{display: 'flex', zIndex: 10, position: 'relative'}}>
-              <img 
+              <Image 
                 src="/logo alumni.png" 
                 alt="Alumni Directory Logo" 
+                width={100}
+                height={60}
                 style={{height: '60px', width: 'auto', cursor: 'pointer', pointerEvents: 'auto'}}
               />
             </Link>
@@ -124,7 +127,7 @@ export default function Header() {
                     {profile?.photo_url ? (
                       <img 
                         src={profile.photo_url} 
-                        alt={profile.full_name}
+                        alt={profile.full_name || 'Profile'}
                         className="w-full h-full object-cover"
                       />
                     ) : (

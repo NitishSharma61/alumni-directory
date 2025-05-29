@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
@@ -34,7 +34,7 @@ export default function EditProfilePage() {
   // When the page loads, fetch the current user's profile data
   useEffect(() => {
     fetchUserProfile()
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchUserProfile = async () => {
     try {

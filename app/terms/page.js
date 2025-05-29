@@ -87,7 +87,7 @@ export default function TermsPage() {
               <section className="mb-8">
                 <h2 className="text-2xl font-semibold mb-4" style={{color: 'var(--foreground)'}}>6. Disclaimer</h2>
                 <p className="mb-4">
-                  The materials on Alumni Directory are provided "as is". Alumni Directory makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties including, without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights.
+                  The materials on Alumni Directory are provided &quot;as is&quot;. Alumni Directory makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties including, without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights.
                 </p>
               </section>
 

@@ -66,7 +66,7 @@ export default function ContactPage() {
                 Get in Touch
               </h1>
               <p className="text-lg mb-8" style={{color: 'var(--foreground-secondary)', lineHeight: 1.7}}>
-                Have questions about the Alumni Directory? Need help with your account? We're here to help!
+                Have questions about the Alumni Directory? Need help with your account? We&apos;re here to help!
               </p>
 
               <div className="space-y-6">
@@ -81,7 +81,7 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-semibold mb-1" style={{color: 'var(--foreground)'}}>Email Us</h3>
                     <p style={{color: 'var(--foreground-secondary)'}}>support@alumnidirectory.org</p>
-                    <p className="text-sm mt-1" style={{color: 'var(--foreground-tertiary)'}}>We'll respond within 24 hours</p>
+                    <p className="text-sm mt-1" style={{color: 'var(--foreground-tertiary)'}}>We&apos;ll respond within 24 hours</p>
                   </div>
                 </div>
 
@@ -134,7 +134,7 @@ export default function ContactPage() {
               {success && (
                 <div className="mb-6 p-4 rounded-lg" style={{background: 'rgba(0, 200, 150, 0.1)', border: '1px solid rgba(0, 200, 150, 0.3)'}}>
                   <p className="text-center" style={{color: 'var(--success)'}}>
-                    Thank you for your message! We'll get back to you soon.
+                    Thank you for your message! We&apos;ll get back to you soon.
                   </p>
                 </div>
               )}

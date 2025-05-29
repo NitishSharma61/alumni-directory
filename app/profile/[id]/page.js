@@ -20,7 +20,7 @@ export default function ProfilePage() {
   // When the page loads, check authentication and fetch profile data
   useEffect(() => {
     checkUserAndFetchProfile()
-  }, [params.id])
+  }, [params.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const checkUserAndFetchProfile = async () => {
     try {

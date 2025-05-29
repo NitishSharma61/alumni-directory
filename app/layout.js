@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "Alumni Directory",
   description: "Reconnect. Network. Thrive.",
-  manifest: "/manifest.json",
+  ...(process.env.NODE_ENV === 'production' && { manifest: "/manifest.json" }),
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -67,9 +67,10 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning={true}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        suppressHydrationWarning={true}
       >
         <Suspense fallback={null}>
           <NavigationLoader />

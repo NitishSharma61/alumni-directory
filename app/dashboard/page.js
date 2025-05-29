@@ -23,11 +23,11 @@ export default function DashboardPage() {
   useEffect(() => {
     checkUser()
     fetchAlumni()
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     filterAlumni()
-  }, [searchTerm, batchFilter, locationFilter, alumni])
+  }, [searchTerm, batchFilter, locationFilter, alumni]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const checkUser = async () => {
     try {

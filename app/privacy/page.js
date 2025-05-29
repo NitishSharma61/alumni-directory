@@ -38,7 +38,7 @@ export default function PrivacyPage() {
               <section className="mb-8">
                 <h2 className="text-2xl font-semibold mb-4" style={{color: 'var(--foreground)'}}>1. Introduction</h2>
                 <p className="mb-4">
-                  Alumni Directory ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our alumni directory service.
+                  Alumni Directory (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our alumni directory service.
                 </p>
               </section>
 
@@ -126,7 +126,7 @@ export default function PrivacyPage() {
               </section>
 
               <section className="mb-8">
-                <h2 className="text-2xl font-semibold mb-4" style={{color: 'var(--foreground)'}}>8. Children's Privacy</h2>
+                <h2 className="text-2xl font-semibold mb-4" style={{color: 'var(--foreground)'}}>8. Children&apos;s Privacy</h2>
                 <p className="mb-4">
                   Our service is not intended for use by anyone under the age of 18. We do not knowingly collect personal information from children under 18.
                 </p>
@@ -135,7 +135,7 @@ export default function PrivacyPage() {
               <section className="mb-8">
                 <h2 className="text-2xl font-semibold mb-4" style={{color: 'var(--foreground)'}}>9. Changes to This Policy</h2>
                 <p className="mb-4">
-                  We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Effective Date."
+                  We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the &quot;Effective Date.&quot;
                 </p>
               </section>
 
