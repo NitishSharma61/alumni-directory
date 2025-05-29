@@ -1,7 +1,7 @@
 {
   "name": "Alumni Directory",
   "short_name": "Alumni",
-  "description": "Connect with your fellow alumni community",
+  "description": "Reconnect. Network. Thrive.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

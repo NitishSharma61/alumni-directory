@@ -92,6 +92,7 @@ export default function SignupPage() {
             full_name: formData.fullName,
             batch_start: parseInt(formData.batchStart),
             batch_end: parseInt(formData.batchEnd),
+            bio: null,
           })
         
         if (profileError) throw profileError
@@ -107,16 +108,15 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6" style={{background: 'var(--background-secondary)'}}>
-      <div className="container-sm">
-        <div className="max-w-lg w-full mx-auto">
-          <div className="animate-fadeIn" style={{background: 'white', borderRadius: 'var(--radius-lg)', padding: '3rem', boxShadow: 'var(--shadow)'}}>
+    <div className="min-h-screen flex items-center justify-center" style={{background: 'var(--background-secondary)'}}>
+      <div className="max-w-lg w-full mx-auto px-6">
+          <div className="animate-fadeIn" style={{background: 'var(--card-background)', borderRadius: 'var(--radius-lg)', padding: '3rem'}}>
             <div className="text-center" style={{marginBottom: '3rem'}}>
               <h2 className="text-4xl font-bold mb-4" style={{color: 'var(--foreground)', letterSpacing: '-0.02em'}}>
                 Join Our Community
               </h2>
               <p className="text-lg" style={{color: 'var(--foreground-secondary)'}}>
-                Create your Alumni Directory profile
+                Reconnect. Network. Thrive.
               </p>
               <p className="mt-6" style={{color: 'var(--foreground-tertiary)', fontSize: '0.9375rem'}}>
                 Already have an account?{' '}
@@ -126,7 +126,7 @@ export default function SignupPage() {
               </p>
             </div>
         
-            <form className="space-y-8" onSubmit={handleSignup}>
+            <form className="space-y-6" onSubmit={handleSignup}>
               {/* Error message display */}
               {error && (
                 <div style={{background: 'rgba(255, 59, 48, 0.08)', border: '1px solid rgba(255, 59, 48, 0.2)', borderRadius: 'var(--radius-sm)', padding: '1rem'}}>
@@ -134,10 +134,10 @@ export default function SignupPage() {
                 </div>
               )}
               
-              <div className="space-y-6">
+              <div className="space-y-8">
                 {/* Full Name Input */}
-                <div>
-                  <label htmlFor="fullName" className="block text-sm font-medium mb-3" style={{color: 'var(--foreground-secondary)'}}>
+                <div className="flex items-center gap-4" style={{paddingBottom: '1rem'}}>
+                  <label htmlFor="fullName" className="text-sm font-medium" style={{color: 'var(--foreground-secondary)', minWidth: '120px'}}>
                     Full Name *
                   </label>
                   <input
@@ -145,7 +145,7 @@ export default function SignupPage() {
                     name="fullName"
                     type="text"
                     required
-                    className="input w-full"
+                    className="input flex-1"
                     placeholder="Enter your full name"
                     value={formData.fullName}
                     onChange={handleChange}
@@ -153,8 +153,8 @@ export default function SignupPage() {
                 </div>
 
                 {/* Email Input */}
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium mb-3" style={{color: 'var(--foreground-secondary)'}}>
+                <div className="flex items-center gap-4" style={{paddingBottom: '1rem'}}>
+                  <label htmlFor="email" className="text-sm font-medium" style={{color: 'var(--foreground-secondary)', minWidth: '120px'}}>
                     Email Address *
                   </label>
                   <input
@@ -163,17 +163,17 @@ export default function SignupPage() {
                     type="email"
                     autoComplete="email"
                     required
-                    className="input w-full"
+                    className="input flex-1"
                     placeholder="your.email@example.com"
                     value={formData.email}
                     onChange={handleChange}
                   />
                 </div>
 
-                {/* Batch Years - Side by side */}
-                <div className="grid grid-cols-2" style={{gap: '1.5rem'}}>
-                  <div>
-                    <label htmlFor="batchStart" className="block text-sm font-medium mb-3" style={{color: 'var(--foreground-secondary)'}}>
+                {/* Batch Years - Responsive grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 w-full" style={{gap: '1rem', paddingBottom: '1rem'}}>
+                  <div className="flex items-center gap-4">
+                    <label htmlFor="batchStart" className="text-sm font-medium" style={{color: 'var(--foreground-secondary)', minWidth: '90px'}}>
                       Batch Start *
                     </label>
                     <input
@@ -183,14 +183,14 @@ export default function SignupPage() {
                       required
                       min="1950"
                       max={new Date().getFullYear()}
-                      className="input w-full"
+                      className="input flex-1"
                       placeholder="2018"
                       value={formData.batchStart}
                       onChange={handleChange}
                     />
                   </div>
-                  <div>
-                    <label htmlFor="batchEnd" className="block text-sm font-medium mb-3" style={{color: 'var(--foreground-secondary)'}}>
+                  <div className="flex items-center gap-4">
+                    <label htmlFor="batchEnd" className="text-sm font-medium" style={{color: 'var(--foreground-secondary)', minWidth: '90px'}}>
                       Batch End *
                     </label>
                     <input
@@ -200,7 +200,7 @@ export default function SignupPage() {
                       required
                       min="1950"
                       max={new Date().getFullYear()}
-                      className="input w-full"
+                      className="input flex-1"
                       placeholder="2022"
                       value={formData.batchEnd}
                       onChange={handleChange}
@@ -209,8 +209,8 @@ export default function SignupPage() {
                 </div>
 
                 {/* Password Input */}
-                <div>
-                  <label htmlFor="password" className="block text-sm font-medium mb-3" style={{color: 'var(--foreground-secondary)'}}>
+                <div className="flex items-center gap-4" style={{paddingBottom: '1rem'}}>
+                  <label htmlFor="password" className="text-sm font-medium" style={{color: 'var(--foreground-secondary)', minWidth: '120px'}}>
                     Password *
                   </label>
                   <input
@@ -219,7 +219,7 @@ export default function SignupPage() {
                     type="password"
                     autoComplete="new-password"
                     required
-                    className="input w-full"
+                    className="input flex-1"
                     placeholder="At least 6 characters"
                     value={formData.password}
                     onChange={handleChange}
@@ -227,8 +227,8 @@ export default function SignupPage() {
                 </div>
 
                 {/* Confirm Password Input */}
-                <div>
-                  <label htmlFor="confirmPassword" className="block text-sm font-medium mb-3" style={{color: 'var(--foreground-secondary)'}}>
+                <div className="flex items-center gap-4" style={{paddingBottom: '1rem'}}>
+                  <label htmlFor="confirmPassword" className="text-sm font-medium" style={{color: 'var(--foreground-secondary)', minWidth: '120px'}}>
                     Confirm Password *
                   </label>
                   <input
@@ -237,7 +237,7 @@ export default function SignupPage() {
                     type="password"
                     autoComplete="new-password"
                     required
-                    className="input w-full"
+                    className="input flex-1"
                     placeholder="Re-enter your password"
                     value={formData.confirmPassword}
                     onChange={handleChange}
@@ -246,12 +246,12 @@ export default function SignupPage() {
               </div>
 
               {/* Submit Button */}
-              <div style={{paddingTop: '1rem'}}>
+              <div className="flex justify-center" style={{paddingTop: '1rem'}}>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="btn-primary w-full disabled:opacity-60 disabled:cursor-not-allowed"
-                  style={{padding: '1rem'}}
+                  className="btn-primary disabled:opacity-60 disabled:cursor-not-allowed"
+                  style={{padding: '0.75rem 2rem'}}
                 >
                   {loading ? (
                     <div className="flex items-center justify-center">
@@ -265,7 +265,6 @@ export default function SignupPage() {
               </div>
             </form>
           </div>
-        </div>
       </div>
     </div>
   )

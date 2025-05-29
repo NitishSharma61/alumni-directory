@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import InstallPrompt from '@/components/InstallPrompt'
+import Footer from '@/components/Footer'
+import Header from '@/components/Header'
 
 export default function DashboardPage() {
   // State management remains the same
@@ -108,174 +110,289 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen" style={{background: 'var(--background-secondary)'}}>
       {/* Header */}
-      <header className="modern-header">
-        <div className="modern-container" style={{paddingTop: '2rem', paddingBottom: '2rem'}}>
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-4xl font-bold" style={{color: 'var(--foreground)', letterSpacing: '-0.02em'}}>Alumni Directory</h1>
-              <p className="mt-2" style={{color: 'var(--foreground-secondary)', fontSize: '1.125rem'}}>Connect with your fellow alumni community</p>
-            </div>
-            <div className="flex items-center" style={{gap: '1rem'}}>
-              <Link
-                href="/profile/edit"
-                className="btn-secondary"
-              >
-                Edit Profile
-              </Link>
-              <button
-                onClick={handleLogout}
-                className="btn-primary"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* Search Section */}
-      <div className="modern-container" style={{paddingTop: '3rem', paddingBottom: '2rem'}}>
-        <div className="modern-card modern-fade-in" style={{padding: '2.5rem', marginBottom: '3rem'}}>
-          <h2 className="text-2xl font-semibold mb-8" style={{color: 'var(--foreground)', letterSpacing: '-0.01em'}}>Find Alumni</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div>
-              <label htmlFor="search" className="block text-sm font-medium text-secondary mb-2">
-                Search by Name
+      <div className="modern-container" style={{paddingTop: '1.5rem', paddingBottom: '1rem'}}>
+        <div className="modern-fade-in" style={{
+          background: 'white',
+          border: '1px solid var(--border-light)',
+          borderRadius: 'var(--radius-md)',
+          padding: '1.25rem',
+          marginBottom: '1.5rem'
+        }}>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl md:text-2xl font-semibold" style={{color: 'var(--foreground)', letterSpacing: '-0.01em'}}>Find Alumni</h2>
+            <p style={{color: 'var(--foreground-secondary)', fontSize: '0.9375rem'}}>
+              Showing <span className="font-semibold" style={{color: 'var(--foreground)'}}>{filteredAlumni.length}</span> of{' '}
+              <span className="font-semibold" style={{color: 'var(--foreground)'}}>{alumni.length}</span> alumni
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="flex items-center gap-3">
+              <label htmlFor="search" className="text-sm font-medium text-secondary whitespace-nowrap">
+                Name:
               </label>
               <input
                 type="text"
                 id="search"
-                placeholder="Enter alumni name..."
-                className="input"
+                placeholder="Search alumni..."
+                className="input flex-1"
+                style={{padding: '0.625rem 1rem'}}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
 
-            <div>
-              <label htmlFor="batch" className="block text-sm font-medium text-secondary mb-2">
-                Filter by Batch Year
+            <div className="flex items-center gap-3">
+              <label htmlFor="batch" className="text-sm font-medium text-secondary whitespace-nowrap">
+                Batch:
               </label>
               <input
                 type="number"
                 id="batch"
-                placeholder="e.g., 2020"
-                className="input"
+                placeholder="Year"
+                className="input flex-1"
+                style={{padding: '0.625rem 1rem'}}
                 value={batchFilter}
                 onChange={(e) => setBatchFilter(e.target.value)}
               />
             </div>
 
-            <div>
-              <label htmlFor="location" className="block text-sm font-medium text-secondary mb-2">
-                Filter by Location
+            <div className="flex items-center gap-3">
+              <label htmlFor="location" className="text-sm font-medium text-secondary whitespace-nowrap">
+                Location:
               </label>
               <input
                 type="text"
                 id="location"
-                placeholder="City or State"
-                className="input"
+                placeholder="City/State"
+                className="input flex-1"
+                style={{padding: '0.625rem 1rem'}}
                 value={locationFilter}
                 onChange={(e) => setLocationFilter(e.target.value)}
               />
             </div>
           </div>
 
-          <div className="flex items-center justify-between" style={{marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border-light)'}}>
-            <p style={{color: 'var(--foreground-secondary)', fontSize: '0.9375rem'}}>
-              Showing <span className="font-semibold" style={{color: 'var(--foreground)'}}>{filteredAlumni.length}</span> of{' '}
-              <span className="font-semibold" style={{color: 'var(--foreground)'}}>{alumni.length}</span> alumni
-            </p>
-            {(searchTerm || batchFilter || locationFilter) && (
+          {(searchTerm || batchFilter || locationFilter) && (
+            <div className="flex items-center justify-end" style={{marginTop: '1rem'}}>
               <button
                 onClick={() => {
                   setSearchTerm('')
                   setBatchFilter('')
                   setLocationFilter('')
                 }}
-                style={{color: 'var(--primary)', fontSize: '0.9375rem', fontWeight: 500}}
+                style={{color: 'var(--primary)', fontSize: '0.875rem', fontWeight: 500}}
                 className="hover:underline transition-all duration-200"
               >
                 Clear all filters
               </button>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
 
       {/* Alumni Grid */}
-      <div className="modern-container" style={{paddingBottom: '4rem'}}>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3" style={{gap: '2rem'}}>
+      <div className="modern-container" style={{paddingBottom: '2rem'}}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" style={{gap: '1.5rem'}}>
           {filteredAlumni.map((person) => (
             <div
               key={person.id}
-              className="modern-card modern-hover-lift"
-              style={{padding: '2rem', marginBottom: 0}}
+              className="professional-alumni-card"
             >
+
               {/* Profile Photo Section */}
-              <div className="text-center" style={{marginBottom: '1.75rem'}}>
+              <div className="text-center" style={{marginBottom: '1.25rem'}}>
                 {person.photo_url ? (
-                  <img
-                    src={person.photo_url}
-                    alt={person.full_name}
-                    className="w-28 h-28 rounded-full mx-auto object-cover"
-                    style={{border: '3px solid var(--border-light)'}}
-                  />
+                  <div style={{position: 'relative', display: 'inline-block'}}>
+                    <img
+                      src={person.photo_url}
+                      alt={person.full_name}
+                      className="rounded-full mx-auto object-cover"
+                      style={{
+                        width: '96px',
+                        height: '96px',
+                        minWidth: '96px',
+                        minHeight: '96px',
+                        maxWidth: '96px',
+                        maxHeight: '96px',
+                        border: '4px solid white',
+                        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08), 0 0 0 1px var(--border-light)'
+                      }}
+                    />
+                    <div style={{
+                      position: 'absolute',
+                      bottom: '4px',
+                      right: '4px',
+                      width: '16px',
+                      height: '16px',
+                      background: 'var(--success)',
+                      borderRadius: '50%',
+                      border: '3px solid white',
+                      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+                    }} />
+                  </div>
                 ) : (
-                  <div className="w-28 h-28 rounded-full mx-auto flex items-center justify-center" style={{background: 'var(--background-tertiary)', border: '3px solid var(--border-light)'}}>
-                    <span className="text-3xl font-semibold" style={{color: 'var(--primary)'}}>
-                      {person.full_name.charAt(0).toUpperCase()}
-                    </span>
+                  <div style={{position: 'relative', display: 'inline-block'}}>
+                    <div className="rounded-full mx-auto flex items-center justify-center" style={{
+                      width: '80px',
+                      height: '80px',
+                      minWidth: '80px',
+                      minHeight: '80px',
+                      maxWidth: '80px',
+                      maxHeight: '80px',
+                      background: 'linear-gradient(135deg, var(--primary-light) 0%, var(--background-tertiary) 100%)',
+                      border: '4px solid white',
+                      boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08), 0 0 0 1px var(--border-light)'
+                    }}>
+                      <span className="text-2xl font-semibold" style={{
+                        color: 'var(--primary)',
+                        fontWeight: '600'
+                      }}>
+                        {person.full_name.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                    <div style={{
+                      position: 'absolute',
+                      bottom: '4px',
+                      right: '4px',
+                      width: '16px',
+                      height: '16px',
+                      background: 'var(--success)',
+                      borderRadius: '50%',
+                      border: '3px solid white',
+                      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+                    }} />
                   </div>
                 )}
               </div>
 
               {/* Alumni Details */}
-              <h3 className="text-xl font-semibold text-center" style={{marginBottom: '1.25rem', color: 'var(--foreground)', letterSpacing: '-0.01em'}}>
-                {person.full_name}
-              </h3>
-              
-              <div className="space-y-3">
-                <div className="flex items-center justify-center" style={{color: 'var(--foreground-secondary)'}}>
-                  <svg className="w-4 h-4 mr-2" style={{color: 'var(--primary)'}} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <div className="text-center" style={{marginBottom: '0.75rem'}}>
+                <h3 style={{
+                  fontSize: '1.25rem',
+                  fontWeight: '600',
+                  color: 'var(--foreground)',
+                  marginBottom: '0.375rem',
+                  letterSpacing: '-0.025em',
+                  lineHeight: '1.3'
+                }}>
+                  {person.full_name}
+                </h3>
+                
+                <div style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  backgroundColor: 'var(--primary-light)',
+                  color: 'var(--primary)',
+                  padding: '0.375rem 0.875rem',
+                  borderRadius: 'var(--radius-full)',
+                  fontSize: '0.8125rem',
+                  fontWeight: '500',
+                  marginBottom: '1rem'
+                }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{marginRight: '0.5rem'}}>
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
                   </svg>
-                  <span style={{fontSize: '0.875rem'}}>
-                    Batch: {person.batch_start} - {person.batch_end}
-                  </span>
+                  Class of {person.batch_end}
+                </div>
+              </div>
+              
+              {/* Details Section - Always show with placeholder text */}
+              <div style={{marginBottom: '1rem', display: 'flex', flexDirection: 'column', gap: '0.625rem'}}>
+                {/* Current Role - Always show */}
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center'
+                }}>
+                  <div style={{
+                    width: '24px',
+                    height: '24px',
+                    backgroundColor: 'var(--background-tertiary)',
+                    borderRadius: 'var(--radius-sm)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginRight: '0.5rem',
+                    flexShrink: 0
+                  }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--foreground-secondary)" strokeWidth="2">
+                      <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                      <line x1="8" y1="21" x2="16" y2="21"/>
+                      <line x1="12" y1="17" x2="12" y2="21"/>
+                    </svg>
+                  </div>
+                  <div style={{flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                    <span style={{
+                      fontSize: '0.75rem',
+                      fontWeight: '600',
+                      color: 'var(--foreground-tertiary)',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                      whiteSpace: 'nowrap'
+                    }}>
+                      Role:
+                    </span>
+                    <span style={{
+                      fontSize: '0.875rem',
+                      fontWeight: '500',
+                      color: person.current_job && person.current_job.trim() ? 'var(--foreground)' : 'var(--foreground-tertiary)',
+                      lineHeight: '1.4',
+                      fontStyle: person.current_job && person.current_job.trim() ? 'normal' : 'italic'
+                    }}>
+                      {person.current_job && person.current_job.trim() ? person.current_job : 'Not filled yet'}
+                    </span>
+                  </div>
                 </div>
                 
-                {person.current_job && (
-                  <div className="flex items-center justify-center text-secondary">
-                    <svg className="w-4 h-4 mr-2 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                {/* Location - Always show */}
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center'
+                }}>
+                  <div style={{
+                    width: '28px',
+                    height: '28px',
+                    backgroundColor: 'var(--background-tertiary)',
+                    borderRadius: 'var(--radius-sm)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginRight: '0.75rem'
+                  }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--foreground-secondary)" strokeWidth="2">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                      <circle cx="12" cy="10" r="3"/>
                     </svg>
-                    <span className="text-sm truncate">
-                      {person.current_job}
-                    </span>
                   </div>
-                )}
-                
-                {(person.city || person.state) && (
-                  <div className="flex items-center justify-center text-secondary">
-                    <svg className="w-4 h-4 mr-2 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    <span className="text-sm">
-                      {person.city}{person.city && person.state && ', '}{person.state}
-                    </span>
+                  <div style={{
+                    fontSize: '0.875rem',
+                    fontWeight: '500',
+                    color: (person.city && person.city.trim()) || (person.state && person.state.trim()) ? 'var(--foreground-secondary)' : 'var(--foreground-tertiary)',
+                    fontStyle: (person.city && person.city.trim()) || (person.state && person.state.trim()) ? 'normal' : 'italic'
+                  }}>
+                    {(person.city && person.city.trim()) || (person.state && person.state.trim()) 
+                      ? [person.city, person.state].filter(item => item && item.trim()).join(', ')
+                      : 'Not filled yet'}
                   </div>
-                )}
+                </div>
               </div>
 
               {/* View Profile Button */}
-              <div style={{marginTop: '1.75rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border-light)'}}>
+              <div style={{textAlign: 'center'}}>
                 <Link
                   href={`/profile/${person.user_id}`}
-                  className="btn-accent w-full text-center block"
+                  className="view-profile-btn"
                 >
                   View Profile
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{marginLeft: '0.375rem'}}>
+                    <path d="M5 12h14"/>
+                    <path d="M12 5l7 7-7 7"/>
+                  </svg>
                 </Link>
               </div>
             </div>
@@ -297,6 +414,9 @@ export default function DashboardPage() {
       
       {/* Install Prompt */}
       <InstallPrompt />
+      
+      {/* Footer */}
+      <Footer />
     </div>
   )
 }

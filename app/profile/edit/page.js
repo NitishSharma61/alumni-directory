@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import PhotoUpload from '@/components/PhotoUpload'
+import Footer from '@/components/Footer'
+import Header from '@/components/Header'
 
 export default function EditProfilePage() {
   const router = useRouter()
@@ -17,7 +19,9 @@ export default function EditProfilePage() {
     current_job: '',
     city: '',
     state: '',
+    phone: '',
     photo_url: '',
+    bio: '',
   })
   
   // State for managing the form submission process
@@ -64,7 +68,9 @@ export default function EditProfilePage() {
           current_job: profile.current_job || '',
           city: profile.city || '',
           state: profile.state || '',
+          phone: profile.phone || '',
           photo_url: profile.photo_url || '',
+          bio: profile.bio || '',
         })
       }
     } catch (error) {
@@ -144,7 +150,9 @@ export default function EditProfilePage() {
           current_job: formData.current_job.trim() || null,
           city: formData.city.trim() || null,
           state: formData.state.trim() || null,
+          phone: formData.phone.trim() || null,
           photo_url: formData.photo_url || null,
+          bio: formData.bio.trim() || null,
           updated_at: new Date().toISOString(),
         })
         .eq('user_id', currentUser.id)
@@ -185,25 +193,57 @@ export default function EditProfilePage() {
   return (
     <div className="min-h-screen" style={{background: 'var(--background-secondary)'}}>
       {/* Header */}
-      <header className="modern-header">
-        <div className="modern-container" style={{paddingTop: '2rem', paddingBottom: '2rem'}}>
-          <div className="flex justify-between items-center">
-            <h1 className="text-4xl font-bold" style={{color: 'var(--foreground)', letterSpacing: '-0.02em'}}>Edit Profile</h1>
-            <Link 
-              href={currentUser ? `/profile/${currentUser.id}` : '/dashboard'}
-              className="btn-secondary"
-            >
-              Cancel
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Header />
+
+      {/* Back Navigation */}
+      <div className="modern-container" style={{paddingTop: '1rem'}}>
+        <Link 
+          href={currentUser ? `/profile/${currentUser.id}` : '/dashboard'}
+          className="inline-flex items-center text-sm md:text-base transition-colors duration-200"
+          style={{color: 'var(--foreground-secondary)'}}
+        >
+          <svg className="w-5 h-5 mr-1 md:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          <span className="hidden sm:inline">Back to Profile</span>
+          <span className="sm:hidden">Back</span>
+        </Link>
+      </div>
 
       {/* Edit Form */}
-      <div className="modern-container" style={{paddingTop: '3rem', paddingBottom: '4rem'}}>
-        <div className="max-w-3xl mx-auto">
-          <div className="modern-card modern-fade-in" style={{padding: '3rem'}}>
-            <form onSubmit={handleSubmit} className="space-y-10">
+      <div className="modern-container" style={{paddingTop: '1.5rem', paddingBottom: '2rem'}}>
+        <div style={{maxWidth: '800px', margin: '0 auto'}}>
+          <div className="animate-fadeIn" style={{
+            background: 'white', 
+            borderRadius: 'var(--radius-lg)', 
+            overflow: 'hidden', 
+            border: '1px solid var(--border-light)'
+          }}>
+            {/* Page Header */}
+            <div className="text-center" style={{
+              padding: '2rem 1.5rem 1.5rem 1.5rem', 
+              background: 'white', 
+              borderBottom: '1px solid var(--border-light)'
+            }}>
+              <h1 className="text-xl md:text-2xl font-bold mb-2" style={{
+                color: 'var(--foreground)', 
+                letterSpacing: '-0.02em',
+                lineHeight: '1.2'
+              }}>
+                Edit Profile
+              </h1>
+              <p style={{
+                color: 'var(--foreground-secondary)',
+                fontSize: '1rem',
+                lineHeight: '1.5'
+              }}>
+                Update your information to help fellow alumni connect with you
+              </p>
+            </div>
+
+            {/* Form Content */}
+            <div style={{padding: '1.5rem'}}>
+            <form onSubmit={handleSubmit} className="space-y-6">
               {/* Success Message */}
               {success && (
                 <div className="bg-success bg-opacity-10 border border-success border-opacity-50 rounded-lg p-4">
@@ -225,7 +265,7 @@ export default function EditProfilePage() {
 
               {/* Basic Information Section */}
               <div>
-                <h2 className="text-2xl font-semibold mb-8" style={{color: 'var(--foreground)', letterSpacing: '-0.01em'}}>Basic Information</h2>
+                <h2 className="text-lg font-semibold uppercase tracking-wider mb-4" style={{color: 'var(--foreground-tertiary)'}}>Basic Information</h2>
                 
                 {/* Photo Upload Section */}
                 <div style={{marginBottom: '2.5rem'}}>
@@ -242,8 +282,8 @@ export default function EditProfilePage() {
                 </div>
                 
                 {/* Full Name */}
-                <div style={{marginBottom: '2rem'}}>
-                  <label htmlFor="full_name" className="block text-sm font-medium mb-3" style={{color: 'var(--foreground-secondary)'}}>
+                <div className="flex items-center gap-4" style={{marginBottom: '1.5rem'}}>
+                  <label htmlFor="full_name" className="text-sm font-medium" style={{color: 'var(--foreground-secondary)', minWidth: '100px'}}>
                     Full Name *
                   </label>
                   <input
@@ -253,16 +293,17 @@ export default function EditProfilePage() {
                     required
                     value={formData.full_name}
                     onChange={handleChange}
-                    className="input"
+                    className="input flex-1"
                     placeholder="Enter your full name"
+                    style={{padding: '0.625rem 1rem'}}
                   />
                 </div>
 
                 {/* Batch Years */}
-                <div className="grid grid-cols-2" style={{gap: '1.5rem'}}>
-                  <div>
-                    <label htmlFor="batch_start" className="block text-sm font-medium mb-3" style={{color: 'var(--foreground-secondary)'}}>
-                      Batch Start Year *
+                <div className="grid grid-cols-1 sm:grid-cols-2 w-full" style={{gap: '1rem', marginBottom: '1.5rem'}}>
+                  <div className="flex items-center gap-4">
+                    <label htmlFor="batch_start" className="text-sm font-medium" style={{color: 'var(--foreground-secondary)', minWidth: '90px'}}>
+                      Start *
                     </label>
                     <input
                       type="number"
@@ -273,13 +314,14 @@ export default function EditProfilePage() {
                       max={new Date().getFullYear()}
                       value={formData.batch_start}
                       onChange={handleChange}
-                      className="input"
+                      className="input flex-1"
                       placeholder="e.g., 2018"
+                      style={{padding: '0.625rem 1rem'}}
                     />
                   </div>
-                  <div>
-                    <label htmlFor="batch_end" className="block text-sm font-medium mb-3" style={{color: 'var(--foreground-secondary)'}}>
-                      Batch End Year *
+                  <div className="flex items-center gap-4">
+                    <label htmlFor="batch_end" className="text-sm font-medium" style={{color: 'var(--foreground-secondary)', minWidth: '90px'}}>
+                      End *
                     </label>
                     <input
                       type="number"
@@ -290,21 +332,22 @@ export default function EditProfilePage() {
                       max={new Date().getFullYear()}
                       value={formData.batch_end}
                       onChange={handleChange}
-                      className="input"
+                      className="input flex-1"
                       placeholder="e.g., 2022"
+                      style={{padding: '0.625rem 1rem'}}
                     />
                   </div>
                 </div>
               </div>
 
               {/* Professional Information Section */}
-              <div style={{paddingTop: '2.5rem', borderTop: '1px solid var(--border-light)'}}>
-                <h2 className="text-2xl font-semibold mb-8" style={{color: 'var(--foreground)', letterSpacing: '-0.01em'}}>Professional Information</h2>
+              <div style={{paddingTop: '1.5rem', borderTop: '1px solid var(--border-light)'}}>
+                <h2 className="text-lg font-semibold uppercase tracking-wider mb-4" style={{color: 'var(--foreground-tertiary)'}}>Professional Information</h2>
                 
                 {/* Current Job */}
-                <div>
-                  <label htmlFor="current_job" className="block text-sm font-medium mb-3" style={{color: 'var(--foreground-secondary)'}}>
-                    Current Job/Position
+                <div className="flex items-center gap-4" style={{marginBottom: '1.5rem'}}>
+                  <label htmlFor="current_job" className="text-sm font-medium" style={{color: 'var(--foreground-secondary)', minWidth: '120px'}}>
+                    Job/Position
                   </label>
                   <input
                     type="text"
@@ -312,20 +355,69 @@ export default function EditProfilePage() {
                     name="current_job"
                     value={formData.current_job}
                     onChange={handleChange}
-                    className="input"
-                    placeholder="e.g., Software Engineer at TechCorp"
+                    className="input flex-1"
+                    placeholder="e.g., Software Engineer"
+                    style={{padding: '0.625rem 1rem'}}
                   />
+                </div>
+
+                {/* Phone Number */}
+                <div className="flex items-center gap-4">
+                  <label htmlFor="phone" className="text-sm font-medium" style={{color: 'var(--foreground-secondary)', minWidth: '120px'}}>
+                    Phone Number
+                  </label>
+                  <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    className="input flex-1"
+                    style={{padding: '0.625rem 1rem'}}
+                    placeholder="e.g., +91 9876543210"
+                  />
+                  <p className="text-xs mt-2" style={{color: 'var(--foreground-tertiary)'}}>
+                    Your phone number will be visible to other alumni for networking purposes
+                  </p>
+                </div>
+              </div>
+
+              {/* About Section */}
+              <div style={{paddingTop: '1.5rem', borderTop: '1px solid var(--border-light)'}}>
+                <h2 className="text-lg font-semibold uppercase tracking-wider mb-4" style={{color: 'var(--foreground-tertiary)'}}>About</h2>
+                
+                <div style={{marginBottom: '1.5rem'}}>
+                  <div className="flex items-start gap-4">
+                    <label htmlFor="bio" className="text-sm font-medium" style={{color: 'var(--foreground-secondary)', minWidth: '120px', paddingTop: '0.625rem'}}>
+                      Bio
+                    </label>
+                    <div className="flex-1">
+                      <textarea
+                        id="bio"
+                        name="bio"
+                        value={formData.bio}
+                        onChange={handleChange}
+                        className="input"
+                        rows={3}
+                        placeholder="Tell us about yourself..."
+                        style={{resize: 'vertical', minHeight: '90px', padding: '0.625rem 1rem'}}
+                      />
+                      <p className="text-xs mt-1" style={{color: 'var(--foreground-tertiary)'}}>
+                        Max 500 characters
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
 
               {/* Location Information Section */}
-              <div style={{paddingTop: '2.5rem', borderTop: '1px solid var(--border-light)'}}>
-                <h2 className="text-2xl font-semibold mb-8" style={{color: 'var(--foreground)', letterSpacing: '-0.01em'}}>Location</h2>
+              <div style={{paddingTop: '1.5rem', borderTop: '1px solid var(--border-light)'}}>
+                <h2 className="text-lg font-semibold uppercase tracking-wider mb-4" style={{color: 'var(--foreground-tertiary)'}}>Location</h2>
                 
-                <div className="grid grid-cols-2" style={{gap: '1.5rem'}}>
+                <div className="grid grid-cols-1 sm:grid-cols-2 w-full" style={{gap: '1rem'}}>
                   {/* City */}
-                  <div>
-                    <label htmlFor="city" className="block text-sm font-medium mb-3" style={{color: 'var(--foreground-secondary)'}}>
+                  <div className="flex items-center gap-4">
+                    <label htmlFor="city" className="text-sm font-medium" style={{color: 'var(--foreground-secondary)', minWidth: '80px'}}>
                       City
                     </label>
                     <input
@@ -334,14 +426,15 @@ export default function EditProfilePage() {
                       name="city"
                       value={formData.city}
                       onChange={handleChange}
-                      className="input"
+                      className="input flex-1"
                       placeholder="e.g., Mumbai"
+                      style={{padding: '0.625rem 1rem'}}
                     />
                   </div>
                   
                   {/* State */}
-                  <div>
-                    <label htmlFor="state" className="block text-sm font-medium mb-3" style={{color: 'var(--foreground-secondary)'}}>
+                  <div className="flex items-center gap-4">
+                    <label htmlFor="state" className="text-sm font-medium" style={{color: 'var(--foreground-secondary)', minWidth: '80px'}}>
                       State
                     </label>
                     <input
@@ -350,15 +443,16 @@ export default function EditProfilePage() {
                       name="state"
                       value={formData.state}
                       onChange={handleChange}
-                      className="input"
+                      className="input flex-1"
                       placeholder="e.g., Maharashtra"
+                      style={{padding: '0.625rem 1rem'}}
                     />
                   </div>
                 </div>
               </div>
 
               {/* Form Actions */}
-              <div className="flex" style={{paddingTop: '2.5rem', gap: '1rem', borderTop: '1px solid var(--border-light)'}}>
+              <div className="flex" style={{paddingTop: '1.5rem', gap: '1rem', borderTop: '1px solid var(--border-light)'}}>
                 <button
                   type="submit"
                   disabled={saving}
@@ -381,14 +475,25 @@ export default function EditProfilePage() {
                 </Link>
               </div>
             </form>
+            
+            {/* Help text */}
+            <div className="text-center" style={{
+              paddingTop: '2rem', 
+              borderTop: '1px solid var(--border-light)',
+              color: 'var(--foreground-tertiary)',
+              fontSize: '0.875rem'
+            }}>
+              <p>
+                Fields marked with * are required. Your phone number will be visible to all alumni for networking. Your email address from registration is visible only to you on your profile.
+              </p>
+            </div>
+            </div>
           </div>
-
-          {/* Help text */}
-          <p className="text-center text-sm" style={{marginTop: '2rem', color: 'var(--foreground-tertiary)'}}>
-            Fields marked with * are required. Your email cannot be changed here for security reasons.
-          </p>
         </div>
       </div>
+      
+      {/* Footer */}
+      <Footer />
     </div>
   )
 }

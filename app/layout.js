@@ -1,5 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
+import { Suspense } from "react";
 import "./globals.css";
+import { NavigationLoader } from "@/components/NavigationLoader";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata = {
   title: "Alumni Directory",
-  description: "Connect with your fellow alumni community",
+  description: "Reconnect. Network. Thrive.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -27,12 +29,12 @@ export const metadata = {
     type: "website",
     siteName: "Alumni Directory",
     title: "Alumni Directory",
-    description: "Connect with your fellow alumni community",
+    description: "Reconnect. Network. Thrive.",
   },
   twitter: {
     card: "summary",
     title: "Alumni Directory", 
-    description: "Connect with your fellow alumni community",
+    description: "Reconnect. Network. Thrive.",
   },
   icons: {
     icon: [
@@ -58,6 +60,9 @@ export const metadata = {
 
 export const viewport = {
   themeColor: "#0066ff",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
 };
 
 export default function RootLayout({ children }) {
@@ -66,6 +71,9 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <Suspense fallback={null}>
+          <NavigationLoader />
+        </Suspense>
         {children}
       </body>
     </html>
