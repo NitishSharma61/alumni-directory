@@ -17,7 +17,8 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (optimized images)
      * - api (API routes)
+     * - public folder assets
      */
-    '/((?!manifest\.json|icon-.*\.png|sw\.js|workbox-.*\.js|favicon\.ico|_next/static|_next/image|api).*)',
+    '/((?!manifest\.json|icon-.*\.png|sw\.js|workbox-.*\.js|favicon\.ico|_next/static|_next/image|api|public).*)',
   ],
 }
