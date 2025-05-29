@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "Alumni Directory",
   description: "Reconnect. Network. Thrive.",
-  ...(process.env.NODE_ENV === 'production' && { manifest: "/manifest.json" }),
+  manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
