@@ -127,7 +127,7 @@ export default function PhotoUpload({ currentPhotoUrl, userId, onPhotoUploaded }
   return (
     <div className="space-y-4">
       {/* Photo preview and upload area */}
-      <div className="flex items-center space-x-6">
+      <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6">
         {/* Current photo or placeholder */}
         <div className="relative">
           <div className="rounded-full overflow-hidden flex items-center justify-center" style={{width: '120px', height: '120px', background: 'var(--background-tertiary)', border: '3px solid var(--border-light)'}}>
@@ -153,7 +153,7 @@ export default function PhotoUpload({ currentPhotoUrl, userId, onPhotoUploaded }
         </div>
 
         {/* Upload controls */}
-        <div className="space-y-2">
+        <div className="space-y-2 w-full sm:w-auto">
           <label className="block">
             <span className="sr-only">Choose profile photo</span>
             <input
@@ -162,9 +162,9 @@ export default function PhotoUpload({ currentPhotoUrl, userId, onPhotoUploaded }
               onChange={handleFileSelect}
               disabled={uploading}
               className="block w-full text-sm cursor-pointer
-                file:mr-4 file:py-2.5 file:px-5
+                file:mr-2 sm:file:mr-4 file:py-2 sm:file:py-2.5 file:px-3 sm:file:px-5
                 file:rounded-full file:border-0
-                file:text-sm file:font-medium
+                file:text-xs sm:file:text-sm file:font-medium
                 file:cursor-pointer
                 file:transition-all file:duration-200
                 disabled:opacity-50 disabled:cursor-not-allowed

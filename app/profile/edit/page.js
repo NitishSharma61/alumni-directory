@@ -279,8 +279,8 @@ export default function EditProfilePage() {
                 </div>
                 
                 {/* Full Name */}
-                <div style={{marginBottom: '1.5rem'}}>
-                  <label htmlFor="full_name" className="block text-sm font-medium" style={{color: 'var(--foreground-secondary)', marginBottom: '0.5rem'}}>
+                <div className="flex flex-col lg:flex-row lg:items-center" style={{marginBottom: '1.5rem', gap: '0.5rem'}}>
+                  <label htmlFor="full_name" className="text-sm font-medium lg:w-24 lg:flex-shrink-0" style={{color: 'var(--foreground-secondary)'}}>
                     Full Name *
                   </label>
                   <input
@@ -297,9 +297,9 @@ export default function EditProfilePage() {
                 </div>
 
                 {/* Batch Years */}
-                <div className="grid grid-cols-2 gap-4" style={{marginBottom: '1.5rem'}}>
-                  <div>
-                    <label htmlFor="batch_start" className="block text-sm font-medium" style={{color: 'var(--foreground-secondary)', marginBottom: '0.5rem'}}>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4" style={{marginBottom: '1.5rem'}}>
+                  <div className="flex flex-col lg:flex-row lg:items-center" style={{gap: '0.5rem'}}>
+                    <label htmlFor="batch_start" className="text-sm font-medium lg:w-24 lg:flex-shrink-0" style={{color: 'var(--foreground-secondary)'}}>
                       Start Year *
                     </label>
                     <input
@@ -316,8 +316,8 @@ export default function EditProfilePage() {
                       style={{padding: '0.625rem 1rem'}}
                     />
                   </div>
-                  <div>
-                    <label htmlFor="batch_end" className="block text-sm font-medium" style={{color: 'var(--foreground-secondary)', marginBottom: '0.5rem'}}>
+                  <div className="flex flex-col lg:flex-row lg:items-center" style={{gap: '0.5rem'}}>
+                    <label htmlFor="batch_end" className="text-sm font-medium lg:w-24 lg:flex-shrink-0" style={{color: 'var(--foreground-secondary)'}}>
                       End Year *
                     </label>
                     <input
@@ -342,8 +342,8 @@ export default function EditProfilePage() {
                 <h2 className="text-lg font-semibold uppercase tracking-wider mb-6" style={{color: 'var(--foreground-tertiary)'}}>Professional Information</h2>
                 
                 {/* Current Job */}
-                <div style={{marginBottom: '1.5rem'}}>
-                  <label htmlFor="current_job" className="block text-sm font-medium" style={{color: 'var(--foreground-secondary)', marginBottom: '0.5rem'}}>
+                <div className="flex flex-col lg:flex-row lg:items-center" style={{marginBottom: '1.5rem', gap: '0.5rem'}}>
+                  <label htmlFor="current_job" className="text-sm font-medium lg:w-40 lg:flex-shrink-0" style={{color: 'var(--foreground-secondary)'}}>
                     Job/Position
                   </label>
                   <input
@@ -359,53 +359,57 @@ export default function EditProfilePage() {
                 </div>
 
                 {/* Phone Number */}
-                <div>
-                  <label htmlFor="phone" className="block text-sm font-medium" style={{color: 'var(--foreground-secondary)', marginBottom: '0.5rem'}}>
+                <div className="flex flex-col lg:flex-row lg:items-start" style={{gap: '0.5rem'}}>
+                  <label htmlFor="phone" className="text-sm font-medium lg:w-40 lg:flex-shrink-0" style={{color: 'var(--foreground-secondary)'}}>
                     Phone Number
                   </label>
-                  <input
-                    type="tel"
-                    id="phone"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    className="input w-full"
-                    style={{padding: '0.625rem 1rem'}}
-                    placeholder="e.g., +91 9876543210"
-                  />
-                  <p className="text-xs mt-2" style={{color: 'var(--foreground-tertiary)'}}>
-                    Your phone number will be visible to other alumni for networking purposes
-                  </p>
+                  <div className="w-full">
+                    <input
+                      type="tel"
+                      id="phone"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      className="input w-full"
+                      style={{padding: '0.625rem 1rem'}}
+                      placeholder="e.g., +91 9876543210"
+                    />
+                    <p className="text-xs mt-2" style={{color: 'var(--foreground-tertiary)'}}>
+                      Your phone number will be visible to other alumni for networking purposes
+                    </p>
+                  </div>
                 </div>
               </div>
 
               {/* About Section */}
               <div style={{paddingTop: '2rem', borderTop: '1px solid var(--border-light)'}}>
-                <div style={{marginBottom: '2rem'}}>
-                  <label htmlFor="bio" className="block text-sm font-medium" style={{color: 'var(--foreground-secondary)', marginBottom: '0.5rem'}}>
+                <div className="flex flex-col lg:flex-row lg:items-start" style={{marginBottom: '2rem', gap: '0.5rem'}}>
+                  <label htmlFor="bio" className="text-sm font-medium lg:w-40 lg:flex-shrink-0" style={{color: 'var(--foreground-secondary)'}}>
                     About
                   </label>
-                  <textarea
-                    id="bio"
-                    name="bio"
-                    value={formData.bio}
-                    onChange={handleChange}
-                    className="input w-full"
-                    rows={4}
-                    placeholder="Tell us about yourself..."
-                    style={{
-                      resize: 'vertical', 
-                      minHeight: '100px', 
-                      maxHeight: '400px',
-                      padding: '0.75rem 1rem',
-                      fontFamily: 'inherit',
-                      lineHeight: '1.5',
-                      overflow: 'auto'
-                    }}
-                  />
-                  <p className="text-xs mt-1" style={{color: 'var(--foreground-tertiary)'}}>
-                    Max 500 characters • Drag corner to resize
-                  </p>
+                  <div className="w-full">
+                    <textarea
+                      id="bio"
+                      name="bio"
+                      value={formData.bio}
+                      onChange={handleChange}
+                      className="input w-full"
+                      rows={4}
+                      placeholder="Tell us about yourself..."
+                      style={{
+                        resize: 'vertical', 
+                        minHeight: '100px', 
+                        maxHeight: '400px',
+                        padding: '0.75rem 1rem',
+                        fontFamily: 'inherit',
+                        lineHeight: '1.5',
+                        overflow: 'auto'
+                      }}
+                    />
+                    <p className="text-xs mt-1" style={{color: 'var(--foreground-tertiary)'}}>
+                      Max 500 characters • Drag corner to resize
+                    </p>
+                  </div>
                 </div>
               </div>
 
@@ -413,10 +417,10 @@ export default function EditProfilePage() {
               <div style={{paddingTop: '2rem', borderTop: '1px solid var(--border-light)'}}>
                 <h2 className="text-lg font-semibold uppercase tracking-wider mb-6" style={{color: 'var(--foreground-tertiary)'}}>Location</h2>
                 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                   {/* City */}
-                  <div>
-                    <label htmlFor="city" className="block text-sm font-medium" style={{color: 'var(--foreground-secondary)', marginBottom: '0.5rem'}}>
+                  <div className="flex flex-col lg:flex-row lg:items-center" style={{gap: '0.5rem'}}>
+                    <label htmlFor="city" className="text-sm font-medium lg:w-20 lg:flex-shrink-0" style={{color: 'var(--foreground-secondary)'}}>
                       City
                     </label>
                     <input
@@ -432,8 +436,8 @@ export default function EditProfilePage() {
                   </div>
                   
                   {/* State */}
-                  <div>
-                    <label htmlFor="state" className="block text-sm font-medium" style={{color: 'var(--foreground-secondary)', marginBottom: '0.5rem'}}>
+                  <div className="flex flex-col lg:flex-row lg:items-center" style={{gap: '0.5rem'}}>
+                    <label htmlFor="state" className="text-sm font-medium lg:w-20 lg:flex-shrink-0" style={{color: 'var(--foreground-secondary)'}}>
                       State
                     </label>
                     <input

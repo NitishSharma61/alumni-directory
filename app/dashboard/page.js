@@ -205,7 +205,7 @@ export default function DashboardPage() {
               <span className="font-semibold" style={{color: 'var(--foreground)'}}>{alumni.length}</span> alumni
             </p>
           </div>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
               <label htmlFor="search" className="block text-sm font-medium text-secondary" style={{marginBottom: '0.5rem'}}>
                 Search by Name
@@ -272,7 +272,7 @@ export default function DashboardPage() {
 
       {/* Alumni Grid */}
       <div className="modern-container" style={{paddingBottom: '2rem'}}>
-        <div className="grid grid-cols-3" style={{gap: '1.5rem'}}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" style={{gap: '1.5rem'}}>
           {filteredAlumni.map((person) => (
             <div
               key={person.id}

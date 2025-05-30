@@ -97,7 +97,7 @@ export default function ProfilePage() {
       <Header />
       
       {/* Back Navigation */}
-      <div className="modern-container" style={{paddingTop: '1rem'}}>
+      <div className="modern-container" style={{paddingTop: '0.5rem'}}>
         <Link 
           href="/dashboard"
           className="inline-flex items-center text-sm md:text-base transition-colors duration-200"
@@ -112,18 +112,18 @@ export default function ProfilePage() {
       </div>
 
       {/* Profile Content */}
-      <div className="modern-container px-4 sm:px-6 lg:px-8" style={{paddingTop: '0.75rem', paddingBottom: '2rem'}}>
+      <div className="modern-container px-4 sm:px-6 lg:px-8" style={{paddingTop: '3rem', paddingBottom: '2rem'}}>
         <div style={{maxWidth: '600px', margin: '0 auto'}}>
           <div className="animate-fadeIn mx-2 sm:mx-0" style={{
             background: 'white', 
             borderRadius: '8px',
             overflow: 'hidden', 
             border: '1px solid var(--border-light)',
-            width: '600px'
+            width: '100%',
+            maxWidth: '600px'
           }}>
             {/* Profile Header Section - Horizontal Layout */}
-            <div style={{
-              padding: '1rem 1.5rem',
+            <div className="p-6 sm:p-8" style={{
               background: 'white',
               borderBottom: '1px solid var(--border-light)',
               display: 'flex',
@@ -132,18 +132,15 @@ export default function ProfilePage() {
               flexWrap: 'wrap'
             }}>
               {/* Left Column - Profile Photo */}
-              <div className="flex items-center justify-center overflow-hidden" style={{
-                width: '100px', 
-                height: '100px',
-                minWidth: '100px',
-                minHeight: '100px',
-                maxWidth: '100px',
-                maxHeight: '100px',
+              <div className="flex items-center justify-center overflow-hidden w-16 h-16 sm:w-20 sm:h-20" style={{
+                minWidth: '64px',
+                minHeight: '64px',
                 background: 'white', 
                 borderRadius: '50%', 
                 boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08), 0 0 0 1px var(--border-light)',
                 border: '3px solid white',
-                flexShrink: 0
+                flexShrink: 0,
+                marginLeft: '0.5rem'
               }}>
                 {alumni.photo_url ? (
                   <img 
@@ -166,7 +163,7 @@ export default function ProfilePage() {
               
               {/* Right Column - Info */}
               <div style={{flex: 1, minWidth: '200px'}}>
-                {/* Name and Class Badge in same row */}
+                {/* Name and Class on same row */}
                 <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem'}}>
                   {/* Name */}
                   <h1 className="text-xl md:text-2xl font-bold" style={{
@@ -176,31 +173,20 @@ export default function ProfilePage() {
                   }}>
                     {alumni.full_name}
                   </h1>
-
-                  {/* Class Badge - Right aligned */}
-                  <div style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    backgroundColor: 'var(--primary-light)',
-                    color: 'var(--primary)',
-                    padding: '0.25rem 0.75rem',
-                    borderRadius: 'var(--radius-full)',
-                    fontSize: '0.8125rem',
-                    fontWeight: '500',
-                    flexShrink: 0
+                  
+                  {/* Class of - Right side */}
+                  <p style={{
+                    fontSize: '0.875rem',
+                    color: 'var(--foreground-secondary)',
+                    flexShrink: 0,
+                    marginRight: '0.5rem'
                   }}>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{marginRight: '0.375rem'}}>
-                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                      <line x1="16" y1="2" x2="16" y2="6"/>
-                      <line x1="8" y1="2" x2="8" y2="6"/>
-                      <line x1="3" y1="10" x2="21" y2="10"/>
-                    </svg>
                     Class of {alumni.batch_start} - {alumni.batch_end}
-                  </div>
+                  </p>
                 </div>
                 
-                {/* 2x2 Grid Layout */}
-                <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginTop: '0.5rem'}}>
+                {/* 2x2 Grid Layout - Mobile: 1 column, Desktop: 2 columns */}
+                <div className="grid grid-cols-1 sm:grid-cols-2" style={{gap: '0.75rem', marginTop: '0.5rem'}}>
                   {/* Current Position - Top Left */}
                   <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
                     <div title="Current Position" style={{cursor: 'pointer', display: 'flex', alignItems: 'center'}}>
@@ -293,7 +279,7 @@ export default function ProfilePage() {
             </div>
 
             {/* About Section */}
-            <div style={{padding: '1rem 1.5rem'}}>
+            <div style={{padding: '1.5rem 2rem'}}>
               <div style={{
                 background: 'white',
                 padding: '0.75rem 1rem',
