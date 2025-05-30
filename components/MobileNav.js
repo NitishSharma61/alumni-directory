@@ -4,10 +4,12 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import { isAdminEmail } from '@/lib/constants'
 
 export default function MobileNav({ user }) {
   const [isOpen, setIsOpen] = useState(false)
   const router = useRouter()
+  const isAdmin = user ? isAdminEmail(user.email) : false
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -68,10 +70,10 @@ export default function MobileNav({ user }) {
           </div>
 
           {/* Menu Content */}
-          <div className="space-y-3">
+          <div className="space-y-5">
             <Link
               href="/dashboard"
-              className="block py-3 px-4 rounded-lg transition-colors"
+              className="block py-4 px-5 rounded-lg transition-colors"
               style={{backgroundColor: 'var(--background-tertiary)', color: 'var(--foreground)'}}
               onClick={() => setIsOpen(false)}
             >
@@ -85,7 +87,7 @@ export default function MobileNav({ user }) {
 
             <Link
               href="/profile/edit"
-              className="block py-3 px-4 rounded-lg transition-colors"
+              className="block py-4 px-5 rounded-lg transition-colors"
               style={{backgroundColor: 'var(--background-tertiary)', color: 'var(--foreground)'}}
               onClick={() => setIsOpen(false)}
             >
@@ -100,7 +102,7 @@ export default function MobileNav({ user }) {
             {user && (
               <Link
                 href={`/profile/${user.id}`}
-                className="block py-3 px-4 rounded-lg transition-colors"
+                className="block py-4 px-5 rounded-lg transition-colors"
                 style={{backgroundColor: 'var(--background-tertiary)', color: 'var(--foreground)'}}
                 onClick={() => setIsOpen(false)}
               >
@@ -113,6 +115,22 @@ export default function MobileNav({ user }) {
               </Link>
             )}
 
+            {isAdmin && (
+              <Link
+                href="/admin"
+                className="block py-4 px-5 rounded-lg transition-colors"
+                style={{backgroundColor: 'var(--primary-light)', color: 'var(--primary)'}}
+                onClick={() => setIsOpen(false)}
+              >
+                <div className="flex items-center">
+                  <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                  </svg>
+                  Admin Dashboard
+                </div>
+              </Link>
+            )}
+
             <hr style={{borderColor: 'var(--border-light)'}} />
 
             <button
@@ -120,7 +138,7 @@ export default function MobileNav({ user }) {
                 handleLogout()
                 setIsOpen(false)
               }}
-              className="w-full text-left py-3 px-4 rounded-lg transition-colors"
+              className="w-full text-left py-4 px-5 rounded-lg transition-colors"
               style={{backgroundColor: 'rgba(255, 59, 48, 0.1)', color: 'var(--error)'}}
             >
               <div className="flex items-center">

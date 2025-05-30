@@ -3,14 +3,16 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import { isAdminEmail } from '@/lib/constants'
 import Link from 'next/link'
 import InstallPrompt from '@/components/InstallPrompt'
-import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 
 export default function DashboardPage() {
   // State management remains the same
   const [user, setUser] = useState(null)
+  const [currentUserProfile, setCurrentUserProfile] = useState(null)
+  const [isAdmin, setIsAdmin] = useState(false)
   const [alumni, setAlumni] = useState([])
   const [filteredAlumni, setFilteredAlumni] = useState([])
   const [loading, setLoading] = useState(true)
@@ -22,7 +24,6 @@ export default function DashboardPage() {
   // All the useEffect hooks and functions remain the same
   useEffect(() => {
     checkUser()
-    fetchAlumni()
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
@@ -39,6 +40,22 @@ export default function DashboardPage() {
       }
       
       setUser(user)
+      const adminStatus = isAdminEmail(user.email)
+      setIsAdmin(adminStatus)
+      
+      // Fetch current user's profile to check approval status
+      const { data: profile } = await supabase
+        .from('alumni_profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .single()
+      
+      if (profile) {
+        setCurrentUserProfile(profile)
+      }
+      
+      // Now fetch alumni with correct admin status
+      await fetchAlumniWithAdminStatus(adminStatus)
     } catch (error) {
       console.error('Error checking user:', error)
       router.push('/login')
@@ -47,10 +64,44 @@ export default function DashboardPage() {
 
   const fetchAlumni = async () => {
     try {
-      const { data, error } = await supabase
+      // Only fetch approved alumni (unless user is admin)
+      let query = supabase
         .from('alumni_profiles')
         .select('*')
         .order('full_name', { ascending: true })
+      
+      // Non-admin users only see approved alumni
+      if (!isAdmin) {
+        query = query.eq('is_approved', true)
+      }
+      
+      const { data, error } = await query
+      
+      if (error) throw error
+      
+      setAlumni(data || [])
+      setFilteredAlumni(data || [])
+    } catch (error) {
+      console.error('Error fetching alumni:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const fetchAlumniWithAdminStatus = async (adminStatus) => {
+    try {
+      // Only fetch approved alumni (unless user is admin)
+      let query = supabase
+        .from('alumni_profiles')
+        .select('*')
+        .order('full_name', { ascending: true })
+      
+      // Non-admin users only see approved alumni
+      if (!adminStatus) {
+        query = query.eq('is_approved', true)
+      }
+      
+      const { data, error } = await query
       
       if (error) throw error
       
@@ -112,8 +163,34 @@ export default function DashboardPage() {
       {/* Header */}
       <Header />
 
-      {/* Search Section */}
-      <div className="modern-container" style={{paddingTop: '1.5rem', paddingBottom: '1rem'}}>
+      {/* Pending Approval Banner */}
+      {currentUserProfile && !currentUserProfile.is_approved && !isAdmin && (
+        <div style={{background: '#fffbeb', padding: '1rem', borderBottom: '1px solid #fbbf24'}}>
+          <div className="modern-container">
+            <div className="flex items-center justify-center">
+              <div className="flex items-center gap-3">
+                <svg className="w-6 h-6" fill="none" stroke="#f59e0b" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <div className="text-center">
+                  <p className="font-semibold" style={{color: '#92400e'}}>Your account is pending approval</p>
+                  <p className="text-sm" style={{color: '#92400e'}}>You can update your profile while waiting for approval. Once approved, you&apos;ll be able to see other alumni.</p>
+                </div>
+                <Link href="/profile/edit" className="btn-secondary" style={{background: '#f59e0b', color: 'white', fontWeight: '600', marginLeft: '1rem'}}>
+                  Update Profile
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+
+      {/* Main Content - Only show if approved or admin */}
+      {(currentUserProfile?.is_approved || isAdmin) ? (
+        <>
+          {/* Search Section */}
+          <div className="modern-container" style={{paddingTop: '1.5rem', paddingBottom: '1rem'}}>
         <div className="modern-fade-in" style={{
           background: 'white',
           border: '1px solid var(--border-light)',
@@ -122,52 +199,52 @@ export default function DashboardPage() {
           marginBottom: '1.5rem'
         }}>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl md:text-2xl font-semibold" style={{color: 'var(--foreground)', letterSpacing: '-0.01em'}}>Find Alumni</h2>
-            <p style={{color: 'var(--foreground-secondary)', fontSize: '0.9375rem'}}>
+            <h2 className="text-2xl font-semibold" style={{color: 'var(--foreground)', letterSpacing: '-0.01em'}}>Find Alumni</h2>
+            <p style={{color: 'var(--foreground-secondary)'}}>
               Showing <span className="font-semibold" style={{color: 'var(--foreground)'}}>{filteredAlumni.length}</span> of{' '}
               <span className="font-semibold" style={{color: 'var(--foreground)'}}>{alumni.length}</span> alumni
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="flex items-center gap-3">
-              <label htmlFor="search" className="text-sm font-medium text-secondary whitespace-nowrap">
-                Name:
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <label htmlFor="search" className="block text-sm font-medium text-secondary" style={{marginBottom: '0.5rem'}}>
+                Search by Name
               </label>
               <input
                 type="text"
                 id="search"
                 placeholder="Search alumni..."
-                className="input flex-1"
+                className="input w-full"
                 style={{padding: '0.625rem 1rem'}}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
 
-            <div className="flex items-center gap-3">
-              <label htmlFor="batch" className="text-sm font-medium text-secondary whitespace-nowrap">
-                Batch:
+            <div>
+              <label htmlFor="batch" className="block text-sm font-medium text-secondary" style={{marginBottom: '0.5rem'}}>
+                Filter by Batch Year
               </label>
               <input
                 type="number"
                 id="batch"
                 placeholder="Year"
-                className="input flex-1"
+                className="input w-full"
                 style={{padding: '0.625rem 1rem'}}
                 value={batchFilter}
                 onChange={(e) => setBatchFilter(e.target.value)}
               />
             </div>
 
-            <div className="flex items-center gap-3">
-              <label htmlFor="location" className="text-sm font-medium text-secondary whitespace-nowrap">
-                Location:
+            <div>
+              <label htmlFor="location" className="block text-sm font-medium text-secondary" style={{marginBottom: '0.5rem'}}>
+                Filter by Location
               </label>
               <input
                 type="text"
                 id="location"
                 placeholder="City/State"
-                className="input flex-1"
+                className="input w-full"
                 style={{padding: '0.625rem 1rem'}}
                 value={locationFilter}
                 onChange={(e) => setLocationFilter(e.target.value)}
@@ -195,7 +272,7 @@ export default function DashboardPage() {
 
       {/* Alumni Grid */}
       <div className="modern-container" style={{paddingBottom: '2rem'}}>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" style={{gap: '1.5rem'}}>
+        <div className="grid grid-cols-3" style={{gap: '1.5rem'}}>
           {filteredAlumni.map((person) => (
             <div
               key={person.id}
@@ -218,7 +295,9 @@ export default function DashboardPage() {
                         maxWidth: '96px',
                         maxHeight: '96px',
                         border: '4px solid white',
-                        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08), 0 0 0 1px var(--border-light)'
+                        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08), 0 0 0 1px var(--border-light)',
+                        objectFit: 'cover',
+                        objectPosition: 'center'
                       }}
                     />
                     <div style={{
@@ -411,12 +490,41 @@ export default function DashboardPage() {
           </div>
         )}
       </div>
+        </>
+      ) : (
+        /* Not Approved State */
+        <div className="min-h-screen flex items-center justify-center" style={{paddingTop: '2rem', paddingBottom: '2rem'}}>
+          <div className="text-center max-w-2xl mx-auto" style={{
+            background: '#fffbeb', 
+            padding: '3rem 2rem', 
+            borderRadius: '12px',
+            border: '1px solid #fbbf24'
+          }}>
+            <svg className="mx-auto h-24 w-24 mb-6" style={{color: '#f59e0b'}} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <h2 className="text-3xl font-bold mb-4" style={{color: '#92400e'}}>Account Pending Approval</h2>
+            <p className="text-lg mb-8" style={{color: '#92400e'}}>
+              Your account is currently being reviewed by our admin team. This usually takes 24-48 hours.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-md mx-auto">
+              <Link href="/profile/edit" className="btn-primary" style={{background: '#f59e0b', color: 'white', border: 'none'}}>
+                Complete Your Profile
+              </Link>
+              <Link href={`/profile/${user?.id}`} className="btn-secondary" style={{background: 'white', color: '#f59e0b', border: '1px solid #f59e0b'}}>
+                View Your Profile
+              </Link>
+            </div>
+            <p className="mt-8 text-sm" style={{color: '#92400e'}}>
+              You&apos;ll receive an email notification once your account is approved.
+            </p>
+          </div>
+        </div>
+      )}
       
       {/* Install Prompt */}
       <InstallPrompt />
       
-      {/* Footer */}
-      <Footer />
     </div>
   )
 }

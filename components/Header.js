@@ -5,11 +5,13 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter, usePathname } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import { isAdminEmail } from '@/lib/constants'
 import MobileNav from './MobileNav'
 
 export default function Header() {
   const [user, setUser] = useState(null)
   const [profile, setProfile] = useState(null)
+  const [isAdmin, setIsAdmin] = useState(false)
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const dropdownRef = useRef(null)
   const router = useRouter()
@@ -36,6 +38,8 @@ export default function Header() {
       const { data: { user } } = await supabase.auth.getUser()
       if (user) {
         setUser(user)
+        setIsAdmin(isAdminEmail(user.email))
+        
         // Fetch user profile for name and photo
         const { data: profileData } = await supabase
           .from('alumni_profiles')
@@ -95,20 +99,60 @@ export default function Header() {
                   Alumni Directory
                 </h1>
                 <p className="text-xs md:text-sm truncate" style={{color: 'var(--foreground-secondary)', lineHeight: '1.2'}}>
-                  Reconnect. Network. Thrive.
+                  JNV Pandoh Alumni Network
                 </p>
               </div>
             )}
           </div>
 
-          {/* Right side - User menu */}
-          {user && (
-            <>
-              {/* Desktop and Tablet user dropdown */}
-              <div 
-                className="hidden sm:block relative" 
-                ref={dropdownRef}
+          {/* Right side - Admin button and User menu */}
+          <div className="flex items-center" style={{gap: '1rem'}}>
+            {/* Admin Dashboard Button - Only show for admins */}
+            {isAdmin && pathname !== '/admin' && (
+              <Link 
+                href="/admin" 
+                className="hidden sm:inline-flex items-center gap-2 px-4 py-2 btn-secondary"
+                style={{
+                  background: 'transparent',
+                  color: 'var(--primary)',
+                  borderRadius: 'var(--radius-sm)',
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  transition: 'all 0.2s ease',
+                  border: '2px solid var(--primary)',
+                  textDecoration: 'none',
+                  cursor: 'pointer'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'var(--primary)'
+                  e.currentTarget.style.color = 'white'
+                  e.currentTarget.style.borderColor = 'var(--primary)'
+                  e.currentTarget.style.transform = 'translateY(-1px)'
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.3)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'transparent'
+                  e.currentTarget.style.color = 'var(--primary)'
+                  e.currentTarget.style.borderColor = 'var(--primary)'
+                  e.currentTarget.style.transform = 'translateY(0)'
+                  e.currentTarget.style.boxShadow = 'none'
+                }}
               >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                </svg>
+                Admin Dashboard
+              </Link>
+            )}
+
+            {/* User menu */}
+            {user && (
+              <>
+                {/* Desktop and Tablet user dropdown */}
+                <div 
+                  className="hidden sm:block relative" 
+                  ref={dropdownRef}
+                >
                 {/* Profile Button */}
                 <button
                   onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -164,6 +208,21 @@ export default function Header() {
                     <span style={{fontSize: '0.95rem', fontWeight: '500'}}>Edit Profile</span>
                   </Link>
 
+                  {/* Admin Dashboard - Only show for admins */}
+                  {isAdmin && (
+                    <Link
+                      href="/admin"
+                      className="flex items-center hover:bg-slate-50 transition-colors duration-150"
+                      style={{color: 'var(--foreground)', padding: '1rem 1.5rem', display: 'flex', alignItems: 'center'}}
+                      onClick={() => setDropdownOpen(false)}
+                    >
+                      <svg className="w-5 h-5" style={{color: 'var(--primary)', marginRight: '0.75rem'}} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                      </svg>
+                      <span style={{fontSize: '0.95rem', fontWeight: '500'}}>Admin Dashboard</span>
+                    </Link>
+                  )}
+
                   {/* Divider */}
                   <div className="border-t border-slate-100" style={{margin: '0.5rem 0'}}></div>
 
@@ -179,12 +238,13 @@ export default function Header() {
                     <span style={{fontSize: '0.95rem', fontWeight: '500'}}>Logout</span>
                   </button>
                 </div>
-              </div>
+                </div>
 
-              {/* Mobile navigation */}
-              <MobileNav user={user} />
-            </>
-          )}
+                {/* Mobile navigation */}
+                <MobileNav user={user} />
+              </>
+            )}
+          </div>
         </div>
       </div>
     </header>

@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 
 export default function TermsPage() {
@@ -121,7 +120,6 @@ export default function TermsPage() {
         </div>
       </div>
       
-      <Footer />
     </div>
   )
 }

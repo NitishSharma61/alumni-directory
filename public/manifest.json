@@ -1,7 +1,7 @@
 {
   "name": "Alumni Directory",
   "short_name": "Alumni",
-  "description": "Reconnect. Network. Thrive.",
+  "description": "JNV Pandoh Alumni Network",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

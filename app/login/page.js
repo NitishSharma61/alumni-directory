@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Script from 'next/script'
 import { supabase } from '@/lib/supabase'
 
 export default function LoginPage() {
@@ -11,6 +12,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [recaptchaLoaded, setRecaptchaLoaded] = useState(false)
   const router = useRouter()
 
   // Handle the login form submission
@@ -21,7 +23,44 @@ export default function LoginPage() {
     setLoading(true) // Show loading state
     
     try {
-      // Attempt to sign in with Supabase
+      // Execute reCAPTCHA v3
+      if (!window.grecaptcha) {
+        throw new Error('reCAPTCHA not loaded')
+      }
+
+      const token = await new Promise((resolve, reject) => {
+        window.grecaptcha.ready(async () => {
+          try {
+            const token = await window.grecaptcha.execute(
+              process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY,
+              { action: 'login' }
+            )
+            resolve(token)
+          } catch (err) {
+            reject(err)
+          }
+        })
+      })
+
+      // Verify reCAPTCHA token
+      const recaptchaResponse = await fetch('/api/auth/verify-recaptcha', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          token,
+          action: 'login',
+        }),
+      })
+
+      const recaptchaData = await recaptchaResponse.json()
+
+      if (!recaptchaData.success) {
+        throw new Error(recaptchaData.message || 'reCAPTCHA verification failed')
+      }
+
+      // If reCAPTCHA passed, attempt to sign in with Supabase
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -40,20 +79,33 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center" style={{background: 'var(--background-secondary)'}}>
-      <div className="max-w-md w-full mx-auto px-6">
+    <>
+      <Script
+        src={`https://www.google.com/recaptcha/api.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}`}
+        onLoad={() => setRecaptchaLoaded(true)}
+      />
+      <div className="min-h-screen flex items-center justify-center" style={{background: 'var(--background-secondary)'}}>
+        <div className="max-w-md w-full mx-auto">
           <div className="animate-fadeIn" style={{background: 'var(--card-background)', borderRadius: 'var(--radius-lg)', padding: '3rem'}}>
-            <div className="text-center" style={{marginBottom: '3rem'}}>
+            <div className="text-center" style={{marginBottom: '2rem'}}>
               <img 
                 src="/logo alumni.png" 
                 alt="Alumni Directory Logo" 
-                style={{height: '120px', width: 'auto', margin: '0 auto 2rem auto', display: 'block', maxWidth: '100%', objectFit: 'contain'}}
+                style={{
+                  height: '100px',
+                  width: 'auto',
+                  objectFit: 'contain',
+                  marginBottom: '1rem',
+                  maxHeight: '100px',
+                  display: 'block',
+                  margin: '0 auto 1rem auto'
+                }}
               />
-              <h2 className="text-4xl font-bold mb-4" style={{color: 'var(--foreground)', letterSpacing: '-0.02em'}}>
-                Welcome Back
+              <h2 className="text-4xl font-bold" style={{color: 'var(--foreground)', letterSpacing: '-0.02em', marginBottom: '0.75rem'}}>
+                Hami Navidaya Ho
               </h2>
               <p className="text-lg" style={{color: 'var(--foreground-secondary)'}}>
-                Reconnect. Network. Thrive.
+                JNV Pandoh Alumni Network
               </p>
               <p className="mt-6" style={{color: 'var(--foreground-tertiary)', fontSize: '0.9375rem'}}>
                 Don&apos;t have an account?{' '}
@@ -73,8 +125,8 @@ export default function LoginPage() {
               
               <div className="space-y-6">
                 {/* Email input field */}
-                <div className="flex items-center gap-4" style={{paddingBottom: '0.5rem'}}>
-                  <label htmlFor="email" className="text-sm font-medium" style={{color: 'var(--foreground-secondary)', minWidth: '120px'}}>
+                <div style={{paddingBottom: '0.5rem'}}>
+                  <label htmlFor="email" className="block text-sm font-medium" style={{color: 'var(--foreground-secondary)', marginBottom: '0.5rem'}}>
                     Email Address
                   </label>
                   <input
@@ -83,7 +135,7 @@ export default function LoginPage() {
                     type="email"
                     autoComplete="email"
                     required
-                    className="input flex-1"
+                    className="input w-full"
                     placeholder="Enter your email address"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -91,8 +143,8 @@ export default function LoginPage() {
                 </div>
                 
                 {/* Password input field */}
-                <div className="flex items-center gap-4" style={{paddingBottom: '0.5rem'}}>
-                  <label htmlFor="password" className="text-sm font-medium" style={{color: 'var(--foreground-secondary)', minWidth: '120px'}}>
+                <div style={{paddingBottom: '0.5rem'}}>
+                  <label htmlFor="password" className="block text-sm font-medium" style={{color: 'var(--foreground-secondary)', marginBottom: '0.5rem'}}>
                     Password
                   </label>
                   <input
@@ -101,7 +153,7 @@ export default function LoginPage() {
                     type="password"
                     autoComplete="current-password"
                     required
-                    className="input flex-1"
+                    className="input w-full"
                     placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -131,5 +183,6 @@ export default function LoginPage() {
           </div>
       </div>
     </div>
+    </>
   )
 }

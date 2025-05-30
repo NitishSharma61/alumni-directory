@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata = {
   title: "Alumni Directory",
-  description: "Reconnect. Network. Thrive.",
+  description: "JNV Pandoh Alumni Network",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -29,12 +29,12 @@ export const metadata = {
     type: "website",
     siteName: "Alumni Directory",
     title: "Alumni Directory",
-    description: "Reconnect. Network. Thrive.",
+    description: "JNV Pandoh Alumni Network",
   },
   twitter: {
     card: "summary",
     title: "Alumni Directory", 
-    description: "Reconnect. Network. Thrive.",
+    description: "JNV Pandoh Alumni Network",
   },
   icons: {
     icon: [
