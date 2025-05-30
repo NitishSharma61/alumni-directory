@@ -183,8 +183,8 @@ export default function SignupPage() {
               
               <div className="space-y-8">
                 {/* Full Name Input */}
-                <div style={{paddingBottom: '1rem'}}>
-                  <label htmlFor="fullName" className="block text-sm font-medium" style={{color: 'var(--foreground-secondary)', marginBottom: '0.5rem'}}>
+                <div className="flex flex-col lg:flex-row lg:items-center" style={{gap: '0.5rem', paddingBottom: '1rem'}}>
+                  <label htmlFor="fullName" className="text-sm font-medium lg:w-36 lg:flex-shrink-0" style={{color: 'var(--foreground-secondary)'}}>
                     Full Name *
                   </label>
                   <input
@@ -200,9 +200,9 @@ export default function SignupPage() {
                 </div>
 
                 {/* Email Input */}
-                <div style={{paddingBottom: '1rem'}}>
-                  <label htmlFor="email" className="block text-sm font-medium" style={{color: 'var(--foreground-secondary)', marginBottom: '0.5rem'}}>
-                    Email Address *
+                <div className="flex flex-col lg:flex-row lg:items-center" style={{gap: '0.5rem', paddingBottom: '1rem'}}>
+                  <label htmlFor="email" className="text-sm font-medium lg:w-36 lg:flex-shrink-0" style={{color: 'var(--foreground-secondary)'}}>
+                    Email *
                   </label>
                   <input
                     id="email"
@@ -218,9 +218,9 @@ export default function SignupPage() {
                 </div>
 
                 {/* Batch Years */}
-                <div className="grid grid-cols-2 w-full" style={{gap: '1rem', paddingBottom: '1rem'}}>
-                  <div>
-                    <label htmlFor="batchStart" className="block text-sm font-medium" style={{color: 'var(--foreground-secondary)', marginBottom: '0.5rem'}}>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4" style={{paddingBottom: '1rem'}}>
+                  <div className="flex flex-col lg:flex-row lg:items-center" style={{gap: '0.5rem'}}>
+                    <label htmlFor="batchStart" className="text-sm font-medium lg:w-24 lg:flex-shrink-0" style={{color: 'var(--foreground-secondary)'}}>
                       Batch Start *
                     </label>
                     <input
@@ -236,8 +236,8 @@ export default function SignupPage() {
                       onChange={handleChange}
                     />
                   </div>
-                  <div>
-                    <label htmlFor="batchEnd" className="block text-sm font-medium" style={{color: 'var(--foreground-secondary)', marginBottom: '0.5rem'}}>
+                  <div className="flex flex-col lg:flex-row lg:items-center" style={{gap: '0.5rem'}}>
+                    <label htmlFor="batchEnd" className="text-sm font-medium lg:w-24 lg:flex-shrink-0" style={{color: 'var(--foreground-secondary)'}}>
                       Batch End *
                     </label>
                     <input
@@ -256,8 +256,8 @@ export default function SignupPage() {
                 </div>
 
                 {/* Password Input */}
-                <div style={{paddingBottom: '1rem'}}>
-                  <label htmlFor="password" className="block text-sm font-medium" style={{color: 'var(--foreground-secondary)', marginBottom: '0.5rem'}}>
+                <div className="flex flex-col lg:flex-row lg:items-center" style={{gap: '0.5rem', paddingBottom: '1rem'}}>
+                  <label htmlFor="password" className="text-sm font-medium lg:w-36 lg:flex-shrink-0" style={{color: 'var(--foreground-secondary)'}}>
                     Password *
                   </label>
                   <input
@@ -274,8 +274,8 @@ export default function SignupPage() {
                 </div>
 
                 {/* Confirm Password Input */}
-                <div style={{paddingBottom: '1rem'}}>
-                  <label htmlFor="confirmPassword" className="block text-sm font-medium" style={{color: 'var(--foreground-secondary)', marginBottom: '0.5rem'}}>
+                <div className="flex flex-col lg:flex-row lg:items-center" style={{gap: '0.5rem', paddingBottom: '1rem'}}>
+                  <label htmlFor="confirmPassword" className="text-sm font-medium lg:w-36 lg:flex-shrink-0" style={{color: 'var(--foreground-secondary)'}}>
                     Confirm Password *
                   </label>
                   <input

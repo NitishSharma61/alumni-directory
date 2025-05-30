@@ -85,7 +85,7 @@ export default function LoginPage() {
         onLoad={() => setRecaptchaLoaded(true)}
       />
       <div className="min-h-screen flex items-center justify-center" style={{background: 'var(--background-secondary)'}}>
-        <div className="max-w-md w-full mx-auto">
+        <div className="max-w-lg w-full mx-auto">
           <div className="animate-fadeIn" style={{background: 'var(--card-background)', borderRadius: 'var(--radius-lg)', padding: '3rem'}}>
             <div className="text-center" style={{marginBottom: '2rem'}}>
               <img 
@@ -125,9 +125,9 @@ export default function LoginPage() {
               
               <div className="space-y-6">
                 {/* Email input field */}
-                <div style={{paddingBottom: '0.5rem'}}>
-                  <label htmlFor="email" className="block text-sm font-medium" style={{color: 'var(--foreground-secondary)', marginBottom: '0.5rem'}}>
-                    Email Address
+                <div className="flex flex-col lg:flex-row lg:items-center" style={{gap: '0.5rem', paddingBottom: '0.5rem'}}>
+                  <label htmlFor="email" className="text-sm font-medium lg:w-24 lg:flex-shrink-0" style={{color: 'var(--foreground-secondary)'}}>
+                    Email
                   </label>
                   <input
                     id="email"
@@ -143,8 +143,8 @@ export default function LoginPage() {
                 </div>
                 
                 {/* Password input field */}
-                <div style={{paddingBottom: '0.5rem'}}>
-                  <label htmlFor="password" className="block text-sm font-medium" style={{color: 'var(--foreground-secondary)', marginBottom: '0.5rem'}}>
+                <div className="flex flex-col lg:flex-row lg:items-center" style={{gap: '0.5rem', paddingBottom: '0.5rem'}}>
+                  <label htmlFor="password" className="text-sm font-medium lg:w-24 lg:flex-shrink-0" style={{color: 'var(--foreground-secondary)'}}>
                     Password
                   </label>
                   <input
