@@ -113,22 +113,23 @@ export default function ProfilePage() {
 
       {/* Profile Content */}
       <div className="modern-container px-4 sm:px-6 lg:px-8" style={{paddingTop: '3rem', paddingBottom: '2rem'}}>
-        <div style={{maxWidth: '600px', margin: '0 auto'}}>
+        <div style={{maxWidth: '700px', margin: '0 auto'}}>
           <div className="animate-fadeIn mx-2 sm:mx-0" style={{
             background: 'white', 
-            borderRadius: '8px',
+            borderRadius: '12px',
             overflow: 'hidden', 
             border: '1px solid var(--border-light)',
             width: '100%',
-            maxWidth: '600px'
+            maxWidth: '700px',
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)'
           }}>
             {/* Profile Header Section - Horizontal Layout */}
-            <div className="p-6 sm:p-8" style={{
+            <div className="p-8 sm:p-10" style={{
               background: 'white',
               borderBottom: '1px solid var(--border-light)',
               display: 'flex',
               alignItems: 'flex-start',
-              gap: '1.5rem',
+              gap: '2rem',
               flexWrap: 'wrap'
             }}>
               {/* Left Column - Profile Photo */}
@@ -140,7 +141,8 @@ export default function ProfilePage() {
                 boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08), 0 0 0 1px var(--border-light)',
                 border: '3px solid white',
                 flexShrink: 0,
-                marginLeft: '0.5rem'
+                marginLeft: '0.75rem',
+                marginTop: '0.5rem'
               }}>
                 {alumni.photo_url ? (
                   <img 
@@ -164,9 +166,9 @@ export default function ProfilePage() {
               {/* Right Column - Info */}
               <div style={{flex: 1, minWidth: '200px'}}>
                 {/* Name and Class on same row */}
-                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem'}}>
+                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.5rem'}}>
                   {/* Name */}
-                  <h1 className="text-xl md:text-2xl font-bold" style={{
+                  <h1 className="text-lg md:text-xl font-bold" style={{
                     color: 'var(--foreground)',
                     letterSpacing: '-0.02em',
                     lineHeight: '1.2'
@@ -279,11 +281,11 @@ export default function ProfilePage() {
             </div>
 
             {/* About Section */}
-            <div style={{padding: '1.5rem 2rem'}}>
+            <div style={{padding: '2rem 2.5rem'}}>
               <div style={{
-                background: 'white',
-                padding: '0.75rem 1rem',
-                borderRadius: 'var(--radius)',
+                background: 'var(--background)',
+                padding: '1.25rem 1.5rem',
+                borderRadius: '10px',
                 border: '1px solid var(--border-light)',
                 display: 'flex',
                 gap: '1rem',

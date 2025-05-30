@@ -419,7 +419,7 @@ export default function AdminPage() {
                             minWidth: '36px',
                             minHeight: '36px',
                             background: alumni.photo_url ? 'transparent' : 'var(--background-tertiary)',
-                            color: 'var(--success)',
+                            color: 'var(--foreground-secondary)',
                             flexShrink: 0
                           }}>
                             {alumni.photo_url ? (
@@ -435,9 +435,7 @@ export default function AdminPage() {
                                 }}
                               />
                             ) : (
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                              </svg>
+                              <span className="text-sm font-medium">{alumni.full_name.charAt(0)}</span>
                             )}
                           </div>
                           <span className="font-medium" style={{color: 'var(--foreground)'}}>{alumni.full_name}</span>
