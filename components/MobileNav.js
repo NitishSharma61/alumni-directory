@@ -70,7 +70,7 @@ export default function MobileNav({ user }) {
           </div>
 
           {/* Menu Content */}
-          <div className="space-y-5">
+          <div style={{display: 'flex', flexDirection: 'column', gap: '1.375rem'}}>
             <Link
               href="/dashboard"
               className="block py-4 px-5 rounded-lg transition-colors"
@@ -130,8 +130,6 @@ export default function MobileNav({ user }) {
                 </div>
               </Link>
             )}
-
-            <hr style={{borderColor: 'var(--border-light)'}} />
 
             <button
               onClick={() => {
