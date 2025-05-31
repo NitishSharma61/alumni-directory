@@ -7,6 +7,12 @@ import { useRouter, usePathname } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { isAdminEmail } from '@/lib/constants'
 import MobileNav from './MobileNav'
+import dynamic from 'next/dynamic'
+
+// Dynamically import BackgroundMusic to avoid SSR issues
+const BackgroundMusic = dynamic(() => import('./BackgroundMusic'), {
+  ssr: false
+})
 
 export default function Header() {
   const [user, setUser] = useState(null)
@@ -105,8 +111,13 @@ export default function Header() {
             )}
           </div>
 
-          {/* Right side - Admin button and User menu */}
+          {/* Right side - Music, Admin button and User menu */}
           <div className="flex items-center" style={{gap: '1rem'}}>
+            {/* Background Music Button - Only show on dashboard for logged in users */}
+            {user && pathname === '/dashboard' && (
+              <BackgroundMusic autoPlay={true} />
+            )}
+            
             {/* Admin Dashboard Button - Only show for admins */}
             {isAdmin && pathname !== '/admin' && (
               <Link 

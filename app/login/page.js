@@ -8,7 +8,7 @@ import { supabase } from '@/lib/supabase'
 
 export default function LoginPage() {
   // State management for form inputs and UI feedback
-  const [email, setEmail] = useState('')
+  const [loginIdentifier, setLoginIdentifier] = useState('') // Can be email or mobile
   const [password, setPassword] = useState('')
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -60,7 +60,26 @@ export default function LoginPage() {
         throw new Error(recaptchaData.message || 'reCAPTCHA verification failed')
       }
 
-      // If reCAPTCHA passed, attempt to sign in with Supabase
+      // Check if loginIdentifier is email or mobile
+      let email = loginIdentifier
+      
+      // If it looks like a mobile number, find the email from database
+      if (/^\+?[0-9\s\-()]+$/.test(loginIdentifier.trim())) {
+        // It's a mobile number, fetch the corresponding email
+        const { data: profileData, error: profileError } = await supabase
+          .from('alumni_profiles')
+          .select('email')
+          .eq('phone', loginIdentifier.trim())
+          .single()
+        
+        if (profileError || !profileData) {
+          throw new Error('Mobile number not found or not registered')
+        }
+        
+        email = profileData.email
+      }
+
+      // If reCAPTCHA passed, attempt to sign in with Supabase using email
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -68,7 +87,8 @@ export default function LoginPage() {
       
       if (error) throw error
       
-      // If successful, redirect to the dashboard
+      // If successful, mark that user just logged in and redirect
+      sessionStorage.setItem('justLoggedIn', 'true')
       router.push('/dashboard')
     } catch (error) {
       // If there's an error, display it to the user
@@ -84,25 +104,29 @@ export default function LoginPage() {
         src={`https://www.google.com/recaptcha/api.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}`}
         onLoad={() => setRecaptchaLoaded(true)}
       />
-      <div className="min-h-screen flex items-center justify-center" style={{background: 'var(--background-secondary)'}}>
-        <div className="max-w-lg w-full mx-auto">
-          <div className="animate-fadeIn" style={{background: 'var(--card-background)', borderRadius: 'var(--radius-lg)', padding: '3rem'}}>
+      <div className="min-h-screen flex items-center justify-center md:p-4" style={{background: 'var(--background-secondary)'}}>
+        <div className="max-w-lg w-full mx-auto min-h-screen md:min-h-0">
+          <div className="animate-fadeIn h-screen md:h-auto flex flex-col justify-center login-card-mobile" style={{
+            background: 'var(--card-background)', 
+            borderRadius: 'var(--radius-lg)', 
+            padding: '3rem'
+          }}>
             <div className="text-center" style={{marginBottom: '2rem'}}>
               <img 
                 src="/logo alumni.png" 
                 alt="Alumni Directory Logo" 
                 style={{
-                  height: '100px',
+                  height: '140px',
                   width: 'auto',
                   objectFit: 'contain',
-                  marginBottom: '1rem',
-                  maxHeight: '100px',
+                  marginBottom: '1.5rem',
+                  maxHeight: '140px',
                   display: 'block',
-                  margin: '0 auto 1rem auto'
+                  margin: '0 auto 1.5rem auto'
                 }}
               />
               <h2 className="text-4xl font-bold" style={{color: 'var(--foreground)', letterSpacing: '-0.02em', marginBottom: '0.75rem'}}>
-                Hami Navidaya Ho
+                Hami Navodaya Ho
               </h2>
               <p className="text-lg" style={{color: 'var(--foreground-secondary)'}}>
                 JNV Pandoh Alumni Network
@@ -124,21 +148,21 @@ export default function LoginPage() {
               )}
               
               <div className="space-y-6">
-                {/* Email input field */}
+                {/* Email or Mobile input field */}
                 <div className="flex flex-col lg:flex-row lg:items-center" style={{gap: '0.5rem', paddingBottom: '0.5rem'}}>
-                  <label htmlFor="email" className="text-sm font-medium lg:w-24 lg:flex-shrink-0" style={{color: 'var(--foreground-secondary)'}}>
-                    Email
+                  <label htmlFor="loginIdentifier" className="text-sm font-medium lg:w-24 lg:flex-shrink-0" style={{color: 'var(--foreground-secondary)'}}>
+                    Email/Mobile
                   </label>
                   <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
+                    id="loginIdentifier"
+                    name="loginIdentifier"
+                    type="text"
+                    autoComplete="username"
                     required
                     className="input w-full"
-                    placeholder="Enter your email address"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter email or mobile number"
+                    value={loginIdentifier}
+                    onChange={(e) => setLoginIdentifier(e.target.value)}
                   />
                 </div>
                 

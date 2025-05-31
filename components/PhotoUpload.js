@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 
-export default function PhotoUpload({ currentPhotoUrl, userId, onPhotoUploaded }) {
+export default function PhotoUpload({ currentPhotoUrl, userId, onPhotoUploaded, onPhotoClick }) {
   // State to manage the upload process and preview
   const [uploading, setUploading] = useState(false)
   const [previewUrl, setPreviewUrl] = useState(currentPhotoUrl)
@@ -136,6 +136,21 @@ export default function PhotoUpload({ currentPhotoUrl, userId, onPhotoUploaded }
                 src={previewUrl} 
                 alt="Profile" 
                 className="w-full h-full object-cover"
+                style={{
+                  cursor: 'pointer',
+                  transition: 'transform 0.2s ease'
+                }}
+                onClick={() => {
+                  if (onPhotoClick) {
+                    onPhotoClick(previewUrl);
+                  }
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.transform = 'scale(1.05)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.transform = 'scale(1)';
+                }}
               />
             ) : (
               <svg className="w-14 h-14" style={{color: 'var(--foreground-light)'}} fill="currentColor" viewBox="0 0 20 20">

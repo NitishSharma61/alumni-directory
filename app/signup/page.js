@@ -13,8 +13,8 @@ export default function SignupPage() {
     password: '',
     confirmPassword: '',
     fullName: '',
-    batchStart: '',
-    batchEnd: ''
+    phone: '',
+    batchRange: '' // Changed to single batch range field
   })
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -27,6 +27,25 @@ export default function SignupPage() {
       ...formData,
       [e.target.name]: e.target.value
     })
+  }
+
+  // Generate batch range options
+  const generateBatchRanges = () => {
+    const ranges = []
+    const currentYear = new Date().getFullYear()
+    
+    // Generate ranges from current year going backwards
+    for (let startYear = currentYear - 5; startYear >= 1980; startYear -= 6) {
+      const endYear = startYear + 5
+      ranges.push({
+        value: `${startYear}-${endYear}`,
+        label: `${startYear} - ${endYear}`,
+        startYear,
+        endYear
+      })
+    }
+    
+    return ranges
   }
 
   // This function checks if all the data is valid before we send it to Supabase
@@ -43,19 +62,9 @@ export default function SignupPage() {
       return false
     }
 
-    // Validate batch years make sense
-    const startYear = parseInt(formData.batchStart)
-    const endYear = parseInt(formData.batchEnd)
-    
-    if (startYear > endYear) {
-      setError('Batch start year cannot be after end year')
-      return false
-    }
-
-    // Check reasonable year ranges
-    const currentYear = new Date().getFullYear()
-    if (startYear < 1950 || endYear > currentYear) {
-      setError('Please enter valid batch years')
+    // Validate batch range is selected
+    if (!formData.batchRange) {
+      setError('Please select your batch')
       return false
     }
 
@@ -124,14 +133,18 @@ export default function SignupPage() {
       
       // Step 2: Create the alumni profile with additional information
       if (authData.user) {
+        // Parse batch range to get start and end years
+        const [batchStart, batchEnd] = formData.batchRange.split('-').map(year => parseInt(year.trim()))
+        
         const { error: profileError } = await supabase
           .from('alumni_profiles')
           .insert({
             user_id: authData.user.id,
             full_name: formData.fullName,
             email: formData.email,
-            batch_start: parseInt(formData.batchStart),
-            batch_end: parseInt(formData.batchEnd),
+            phone: formData.phone.trim() || null,
+            batch_start: batchStart,
+            batch_end: batchEnd,
             bio: null,
             is_approved: false,
             created_at: new Date().toISOString(),
@@ -160,7 +173,7 @@ export default function SignupPage() {
           <div className="animate-fadeIn" style={{background: 'var(--card-background)', borderRadius: 'var(--radius-lg)', padding: '3rem'}}>
             <div className="text-center" style={{marginBottom: '3rem'}}>
               <h2 className="text-4xl font-bold mb-4" style={{color: 'var(--foreground)', letterSpacing: '-0.02em'}}>
-                Join Our Community
+                Create Account
               </h2>
               <p className="text-lg" style={{color: 'var(--foreground-secondary)'}}>
                 JNV Pandoh Alumni Network
@@ -217,42 +230,45 @@ export default function SignupPage() {
                   />
                 </div>
 
-                {/* Batch Years */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4" style={{paddingBottom: '1rem'}}>
-                  <div className="flex flex-col lg:flex-row lg:items-center" style={{gap: '0.5rem'}}>
-                    <label htmlFor="batchStart" className="text-sm font-medium lg:w-24 lg:flex-shrink-0" style={{color: 'var(--foreground-secondary)'}}>
-                      Batch Start *
-                    </label>
-                    <input
-                      id="batchStart"
-                      name="batchStart"
-                      type="number"
-                      required
-                      min="1950"
-                      max={new Date().getFullYear()}
-                      className="input w-full"
-                      placeholder="2018"
-                      value={formData.batchStart}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div className="flex flex-col lg:flex-row lg:items-center" style={{gap: '0.5rem'}}>
-                    <label htmlFor="batchEnd" className="text-sm font-medium lg:w-24 lg:flex-shrink-0" style={{color: 'var(--foreground-secondary)'}}>
-                      Batch End *
-                    </label>
-                    <input
-                      id="batchEnd"
-                      name="batchEnd"
-                      type="number"
-                      required
-                      min="1950"
-                      max={new Date().getFullYear()}
-                      className="input w-full"
-                      placeholder="2022"
-                      value={formData.batchEnd}
-                      onChange={handleChange}
-                    />
-                  </div>
+                {/* Phone Input */}
+                <div className="flex flex-col lg:flex-row lg:items-center" style={{gap: '0.5rem', paddingBottom: '1rem'}}>
+                  <label htmlFor="phone" className="text-sm font-medium lg:w-36 lg:flex-shrink-0" style={{color: 'var(--foreground-secondary)'}}>
+                    Mobile Number *
+                  </label>
+                  <input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    autoComplete="tel"
+                    required
+                    className="input w-full"
+                    placeholder="e.g., +91 9876543210"
+                    value={formData.phone}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                {/* Batch Range Dropdown */}
+                <div className="flex flex-col lg:flex-row lg:items-center" style={{gap: '0.5rem', paddingBottom: '1rem'}}>
+                  <label htmlFor="batchRange" className="text-sm font-medium lg:w-36 lg:flex-shrink-0" style={{color: 'var(--foreground-secondary)'}}>
+                    Batch *
+                  </label>
+                  <select
+                    id="batchRange"
+                    name="batchRange"
+                    required
+                    className="input w-full"
+                    style={{padding: '0.625rem 1rem'}}
+                    value={formData.batchRange}
+                    onChange={handleChange}
+                  >
+                    <option value="">Select your batch</option>
+                    {generateBatchRanges().map((range) => (
+                      <option key={range.value} value={range.value}>
+                        {range.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 {/* Password Input */}

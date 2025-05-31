@@ -21,6 +21,9 @@ export default function EditProfilePage() {
     phone: '',
     photo_url: '',
     bio: '',
+    linkedin_url: '',
+    facebook_url: '',
+    instagram_url: '',
   })
   
   // State for managing the form submission process
@@ -29,6 +32,7 @@ export default function EditProfilePage() {
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(false)
   const [currentUser, setCurrentUser] = useState(null)
+  const [zoomedPhoto, setZoomedPhoto] = useState(null)
 
   // When the page loads, fetch the current user's profile data
   useEffect(() => {
@@ -70,6 +74,9 @@ export default function EditProfilePage() {
           phone: profile.phone || '',
           photo_url: profile.photo_url || '',
           bio: profile.bio || '',
+          linkedin_url: profile.linkedin_url || '',
+          facebook_url: profile.facebook_url || '',
+          instagram_url: profile.instagram_url || '',
         })
       }
     } catch (error) {
@@ -152,6 +159,9 @@ export default function EditProfilePage() {
           phone: formData.phone.trim() || null,
           photo_url: formData.photo_url || null,
           bio: formData.bio.trim() || null,
+          linkedin_url: formData.linkedin_url.trim() || null,
+          facebook_url: formData.facebook_url.trim() || null,
+          instagram_url: formData.instagram_url.trim() || null,
           updated_at: new Date().toISOString(),
         })
         .eq('user_id', currentUser.id)
@@ -198,10 +208,14 @@ export default function EditProfilePage() {
       <div className="modern-container" style={{paddingTop: '1rem'}}>
         <Link 
           href={currentUser ? `/profile/${currentUser.id}` : '/dashboard'}
-          className="inline-flex items-center transition-colors duration-200"
-          style={{color: 'var(--foreground-secondary)'}}
+          className="btn-secondary inline-flex items-center"
+          style={{
+            padding: '0.5rem 1.25rem',
+            fontSize: '0.875rem',
+            fontWeight: '500'
+          }}
         >
-          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
           Back to Profile
@@ -274,6 +288,12 @@ export default function EditProfilePage() {
                     userId={currentUser?.id}
                     onPhotoUploaded={(newPhotoUrl) => {
                       setFormData(prev => ({ ...prev, photo_url: newPhotoUrl }))
+                    }}
+                    onPhotoClick={(photoUrl) => {
+                      setZoomedPhoto({
+                        url: photoUrl,
+                        name: formData.full_name || 'Profile Photo'
+                      });
                     }}
                   />
                 </div>
@@ -378,6 +398,62 @@ export default function EditProfilePage() {
                       Your phone number will be visible to other alumni for networking purposes
                     </p>
                   </div>
+                </div>
+              </div>
+
+              {/* Social Media Section */}
+              <div style={{paddingTop: '2rem', borderTop: '1px solid var(--border-light)'}}>
+                <h2 className="text-lg font-semibold uppercase tracking-wider mb-6" style={{color: 'var(--foreground-tertiary)'}}>Social Media</h2>
+                
+                {/* LinkedIn */}
+                <div className="flex flex-col lg:flex-row lg:items-center" style={{marginBottom: '1.5rem', gap: '0.5rem'}}>
+                  <label htmlFor="linkedin_url" className="text-sm font-medium lg:w-40 lg:flex-shrink-0" style={{color: 'var(--foreground-secondary)'}}>
+                    LinkedIn
+                  </label>
+                  <input
+                    type="url"
+                    id="linkedin_url"
+                    name="linkedin_url"
+                    value={formData.linkedin_url}
+                    onChange={handleChange}
+                    className="input w-full"
+                    placeholder="https://linkedin.com/in/yourprofile"
+                    style={{padding: '0.625rem 1rem'}}
+                  />
+                </div>
+
+                {/* Facebook */}
+                <div className="flex flex-col lg:flex-row lg:items-center" style={{marginBottom: '1.5rem', gap: '0.5rem'}}>
+                  <label htmlFor="facebook_url" className="text-sm font-medium lg:w-40 lg:flex-shrink-0" style={{color: 'var(--foreground-secondary)'}}>
+                    Facebook
+                  </label>
+                  <input
+                    type="url"
+                    id="facebook_url"
+                    name="facebook_url"
+                    value={formData.facebook_url}
+                    onChange={handleChange}
+                    className="input w-full"
+                    placeholder="https://facebook.com/yourprofile"
+                    style={{padding: '0.625rem 1rem'}}
+                  />
+                </div>
+
+                {/* Instagram */}
+                <div className="flex flex-col lg:flex-row lg:items-center" style={{gap: '0.5rem'}}>
+                  <label htmlFor="instagram_url" className="text-sm font-medium lg:w-40 lg:flex-shrink-0" style={{color: 'var(--foreground-secondary)'}}>
+                    Instagram
+                  </label>
+                  <input
+                    type="url"
+                    id="instagram_url"
+                    name="instagram_url"
+                    value={formData.instagram_url}
+                    onChange={handleChange}
+                    className="input w-full"
+                    placeholder="https://instagram.com/yourprofile"
+                    style={{padding: '0.625rem 1rem'}}
+                  />
                 </div>
               </div>
 
@@ -494,6 +570,32 @@ export default function EditProfilePage() {
           </div>
         </div>
       </div>
+
+      {/* Photo Zoom Modal */}
+      {zoomedPhoto && (
+        <div 
+          className="photo-zoom-overlay"
+          onClick={() => setZoomedPhoto(null)}
+        >
+          <div 
+            className="photo-zoom-container"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button 
+              className="photo-zoom-close"
+              onClick={() => setZoomedPhoto(null)}
+              title="Close"
+            >
+              ×
+            </button>
+            <img 
+              src={zoomedPhoto.url}
+              alt={zoomedPhoto.name}
+              className="photo-zoom-image"
+            />
+          </div>
+        </div>
+      )}
       
     </div>
   )
