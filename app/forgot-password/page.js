@@ -120,7 +120,7 @@ export default function ForgotPasswordPage() {
                   Check Your Email
                 </h2>
                 <p className="text-lg mb-6" style={{color: 'var(--foreground-secondary)'}}>
-                  We've sent a password reset link to <strong>{email}</strong>
+                  We&apos;ve sent a password reset link to <strong>{email}</strong>
                 </p>
                 <p className="text-sm mb-8" style={{color: 'var(--foreground-tertiary)'}}>
                   Click the link in the email to reset your password. The link will expire in 24 hours.
@@ -179,7 +179,7 @@ export default function ForgotPasswordPage() {
                 Forgot Password?
               </h2>
               <p className="text-lg" style={{color: 'var(--foreground-secondary)'}}>
-                No worries, we'll send you reset instructions.
+                No worries, we&apos;ll send you reset instructions.
               </p>
               <p className="mt-6" style={{color: 'var(--foreground-tertiary)', fontSize: '0.9375rem'}}>
                 Remember your password?{' '}

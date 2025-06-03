@@ -99,7 +99,7 @@ export default function ConfirmEmailPage() {
               Your email address has been successfully verified. Your account is now active and pending admin approval.
             </p>
             <p className="text-sm mb-8" style={{color: 'var(--foreground-tertiary)'}}>
-              You will be redirected to the login page shortly. Once an admin approves your account, you'll receive a welcome email with full access to the alumni directory.
+              You will be redirected to the login page shortly. Once an admin approves your account, you&apos;ll receive a welcome email with full access to the alumni directory.
             </p>
             
             <Link href="/login" className="btn-primary w-full">

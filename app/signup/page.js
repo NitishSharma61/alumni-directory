@@ -216,7 +216,7 @@ export default function SignupPage() {
                 Check Your Email
               </h2>
               <p className="text-lg mb-6" style={{color: 'var(--foreground-secondary)'}}>
-                We've sent a confirmation email to <strong>{formData.email}</strong>
+                We&apos;ve sent a confirmation email to <strong>{formData.email}</strong>
               </p>
               <p className="text-sm mb-8" style={{color: 'var(--foreground-tertiary)'}}>
                 Please check your email and click the confirmation link to activate your account. The link will expire in 24 hours.
