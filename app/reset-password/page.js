@@ -110,10 +110,10 @@ export default function ResetPasswordPage() {
 
       setSuccess(true)
       
-      // Redirect to login after 3 seconds
+      // Redirect to login after 5 seconds
       setTimeout(() => {
         router.push('/login?reset=success')
-      }, 3000)
+      }, 5000)
       
     } catch (error) {
       setError(error.message)
@@ -189,30 +189,39 @@ export default function ResetPasswordPage() {
             borderRadius: 'var(--radius-lg)', 
             padding: '3rem'
           }}>
-            <div className="mx-auto mb-6" style={{
-              width: '80px',
-              height: '80px',
-              borderRadius: '50%',
-              background: 'linear-gradient(135deg, #10b981, #34d399)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}>
-              <svg className="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+            <div className="text-center" style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+              <div style={{
+                width: '80px',
+                height: '80px',
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, #10b981, #34d399)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                position: 'relative',
+                marginBottom: '1.5rem'
+              }}>
+                <svg className="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)'
+                }}>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              
+              <h2 className="text-3xl font-bold mb-4" style={{color: 'var(--foreground)'}}>
+                Password Updated!
+              </h2>
+              <p className="text-lg mb-8" style={{color: 'var(--foreground-secondary)'}}>
+                Your password has been successfully updated. You will be redirected to the login page shortly.
+              </p>
+              
+              <Link href="/login" className="btn-primary">
+                Continue to Login
+              </Link>
             </div>
-            
-            <h2 className="text-3xl font-bold mb-4" style={{color: 'var(--foreground)'}}>
-              Password Updated!
-            </h2>
-            <p className="text-lg mb-8" style={{color: 'var(--foreground-secondary)'}}>
-              Your password has been successfully updated. You will be redirected to the login page shortly.
-            </p>
-            
-            <Link href="/login" className="btn-primary w-full">
-              Continue to Login
-            </Link>
           </div>
         </div>
       </div>
