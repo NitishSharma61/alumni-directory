@@ -40,7 +40,9 @@ export async function POST(request) {
     }
 
     // Check the score (1.0 is very likely a good interaction, 0.0 is very likely a bot)
-    const threshold = action === 'signup' ? 0.7 : 0.5 // Stricter for signup
+    let threshold = 0.5 // Default threshold
+    if (action === 'signup') threshold = 0.7 // Stricter for signup
+    if (action === 'reset_password') threshold = 0.6 // Medium strictness for password reset
     
     if (data.score < threshold) {
       return NextResponse.json(

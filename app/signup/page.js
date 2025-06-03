@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Script from 'next/script'
 import { supabase } from '@/lib/supabase'
@@ -19,7 +19,16 @@ export default function SignupPage() {
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
   const [recaptchaLoaded, setRecaptchaLoaded] = useState(false)
+  const [showConfirmation, setShowConfirmation] = useState(false)
   const router = useRouter()
+  const searchParams = useSearchParams()
+
+  // Check if we should show confirmation message
+  useEffect(() => {
+    if (searchParams.get('confirmation') === 'sent') {
+      setShowConfirmation(true)
+    }
+  }, [searchParams])
 
   // This function updates our form data whenever a user types in any field
   const handleChange = (e) => {
@@ -127,12 +136,24 @@ export default function SignupPage() {
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/confirm-email`,
+          data: {
+            full_name: formData.fullName,
+          }
+        }
       })
       
       if (authError) throw authError
       
       // Step 2: Create the alumni profile with additional information
-      if (authData.user) {
+      // Note: This will only work if email confirmation is disabled in Supabase
+      // If email confirmation is enabled, this profile creation will happen after email confirmation
+      if (authData.user && !authData.user.email_confirmed_at) {
+        // Email confirmation is required - show success message without creating profile yet
+        router.push('/signup?confirmation=sent')
+      } else if (authData.user) {
+        // Email confirmation is disabled - create profile immediately
         // Parse batch range to get start and end years
         const [batchStart, batchEnd] = formData.batchRange.split('-').map(year => parseInt(year.trim()))
         
@@ -152,7 +173,7 @@ export default function SignupPage() {
         
         if (profileError) throw profileError
         
-        // Success! Redirect to login page with success message
+        // Success! Redirect to login page
         router.push('/login?signup=success')
       }
     } catch (error) {
@@ -160,6 +181,63 @@ export default function SignupPage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  // Show email confirmation success message
+  if (showConfirmation) {
+    return (
+      <>
+        <Script
+          src={`https://www.google.com/recaptcha/api.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}`}
+          onLoad={() => setRecaptchaLoaded(true)}
+        />
+        <div className="min-h-screen flex items-center justify-center md:p-4" style={{background: 'var(--background-secondary)'}}>
+          <div className="max-w-lg w-full mx-auto">
+            <div className="animate-fadeIn text-center" style={{
+              background: 'var(--card-background)', 
+              borderRadius: 'var(--radius-lg)', 
+              padding: '3rem'
+            }}>
+              <div className="mx-auto mb-6" style={{
+                width: '80px',
+                height: '80px',
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, #0066ff, #3b82f6)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <svg className="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              </div>
+              
+              <h2 className="text-3xl font-bold mb-4" style={{color: 'var(--foreground)'}}>
+                Check Your Email
+              </h2>
+              <p className="text-lg mb-6" style={{color: 'var(--foreground-secondary)'}}>
+                We've sent a confirmation email to <strong>{formData.email}</strong>
+              </p>
+              <p className="text-sm mb-8" style={{color: 'var(--foreground-tertiary)'}}>
+                Please check your email and click the confirmation link to activate your account. The link will expire in 24 hours.
+              </p>
+              
+              <div className="space-y-4">
+                <button
+                  onClick={() => setShowConfirmation(false)}
+                  className="btn-secondary w-full"
+                >
+                  Back to Sign Up
+                </button>
+                <Link href="/login" className="btn-primary w-full">
+                  Go to Login
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </>
+    )
   }
 
   return (

@@ -203,6 +203,17 @@ export default function LoginPage() {
                   )}
                 </button>
               </div>
+
+              {/* Forgot Password Link */}
+              <div className="text-center" style={{paddingTop: '1rem'}}>
+                <Link 
+                  href="/forgot-password" 
+                  className="text-sm font-medium transition-colors duration-200" 
+                  style={{color: 'var(--primary)'}}
+                >
+                  Forgot your password?
+                </Link>
+              </div>
             </form>
           </div>
       </div>
