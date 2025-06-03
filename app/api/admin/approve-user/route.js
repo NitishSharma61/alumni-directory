@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { isAdminEmail } from '@/lib/constants'
+import { sendWelcomeEmail } from '@/lib/email-service'
 
 export async function POST(request) {
   try {
@@ -46,6 +47,21 @@ export async function POST(request) {
         { error: 'Failed to approve user' },
         { status: 500 }
       )
+    }
+
+    // Send welcome email to the approved user
+    if (data && data.email) {
+      const emailResult = await sendWelcomeEmail({
+        email: data.email,
+        full_name: data.full_name,
+        batch_start: data.batch_start,
+        batch_end: data.batch_end
+      })
+
+      if (!emailResult.success) {
+        console.error('Failed to send welcome email:', emailResult.error)
+        // Don't fail the approval if email fails - just log it
+      }
     }
 
     return NextResponse.json({ success: true, data })

@@ -88,7 +88,7 @@ export default function Header() {
           <div className="flex items-center" style={{gap: '0.75rem'}}>
             <Link href="/dashboard" style={{display: 'flex', zIndex: 10, position: 'relative'}}>
               <Image 
-                src="/logo alumni.png" 
+                src="/logo-alumni.png" 
                 alt="Alumni Directory Logo" 
                 width={100}
                 height={60}

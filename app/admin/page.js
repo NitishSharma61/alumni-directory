@@ -16,6 +16,7 @@ export default function AdminPage() {
   const [approvedUsers, setApprovedUsers] = useState([])
   const [loading, setLoading] = useState(true)
   const [processingId, setProcessingId] = useState(null)
+  const [notification, setNotification] = useState(null)
   const router = useRouter()
 
   useEffect(() => {
@@ -112,12 +113,20 @@ export default function AdminPage() {
       
       // Refresh the lists
       await fetchUsers()
+      
+      // Show success notification
+      showNotification('success', 'User approved successfully! A welcome email has been sent.')
     } catch (error) {
       console.error('Error approving user:', error)
-      alert(`Failed to approve user: ${error.message || 'Unknown error'}`)
+      showNotification('error', `Failed to approve user: ${error.message || 'Unknown error'}`)
     } finally {
       setProcessingId(null)
     }
+  }
+
+  const showNotification = (type, message) => {
+    setNotification({ type, message })
+    setTimeout(() => setNotification(null), 5000)
   }
 
   const handleReject = async (alumniId) => {
@@ -160,9 +169,12 @@ export default function AdminPage() {
       
       // Refresh the lists
       await fetchUsers()
+      
+      // Show success notification
+      showNotification('success', 'User rejected successfully.')
     } catch (error) {
       console.error('Error rejecting user:', error)
-      alert(`Failed to reject user: ${error.message || 'Unknown error'}`)
+      showNotification('error', `Failed to reject user: ${error.message || 'Unknown error'}`)
     } finally {
       setProcessingId(null)
     }
@@ -182,6 +194,56 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen" style={{background: 'var(--background-secondary)'}}>
       <Header />
+      
+      {/* Notification Toast */}
+      {notification && (
+        <div 
+          className={`fixed top-20 right-4 z-50 animate-fadeIn`}
+          style={{
+            background: notification.type === 'success' ? '#10b981' : '#ef4444',
+            color: 'white',
+            padding: '1rem 1.5rem',
+            borderRadius: '12px',
+            boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.75rem',
+            minWidth: '300px',
+            maxWidth: '500px',
+            animation: 'slideIn 0.3s ease-out'
+          }}
+        >
+          {notification.type === 'success' ? (
+            <svg className="w-6 h-6 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+            </svg>
+          ) : (
+            <svg className="w-6 h-6 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+            </svg>
+          )}
+          <div style={{flex: 1}}>
+            <p style={{fontWeight: '500', fontSize: '0.95rem'}}>{notification.message}</p>
+          </div>
+          <button
+            onClick={() => setNotification(null)}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              padding: '0.25rem',
+              opacity: 0.8,
+              transition: 'opacity 0.2s'
+            }}
+            onMouseEnter={(e) => e.target.style.opacity = 1}
+            onMouseLeave={(e) => e.target.style.opacity = 0.8}
+          >
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
+          </button>
+        </div>
+      )}
       
       {/* Admin Header - Minimal style matching the theme */}
       <div style={{background: 'white', borderBottom: '1px solid var(--border-light)', padding: '1.5rem'}}>

@@ -113,7 +113,7 @@ export default function LoginPage() {
           }}>
             <div className="text-center" style={{marginBottom: '2rem'}}>
               <img 
-                src="/logo alumni.png" 
+                src="/logo-alumni.png" 
                 alt="Alumni Directory Logo" 
                 style={{
                   height: '140px',
