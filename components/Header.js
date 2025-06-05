@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { useRouter, usePathname } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { isAdminEmail } from '@/lib/constants'
+import { useMusicContext } from '@/components/MusicProvider'
 import MobileNav from './MobileNav'
 
 export default function Header() {
@@ -16,6 +17,7 @@ export default function Header() {
   const dropdownRef = useRef(null)
   const router = useRouter()
   const pathname = usePathname()
+  const { isPlaying, toggleMusic } = useMusicContext()
 
   useEffect(() => {
     checkUser()
@@ -148,6 +150,30 @@ export default function Header() {
             {/* User menu */}
             {user && (
               <>
+                {/* Music Toggle Button */}
+                <button
+                  onClick={toggleMusic}
+                  className="hidden sm:flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 transition-all"
+                  style={{
+                    background: isPlaying ? 'var(--primary-light)' : 'transparent',
+                    color: isPlaying ? 'var(--primary)' : 'var(--foreground-secondary)'
+                  }}
+                  title={isPlaying ? 'Turn off music' : 'Turn on music'}
+                >
+                  {isPlaying ? (
+                    // Speaker on icon
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                    </svg>
+                  ) : (
+                    // Speaker off icon
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" clipPath="M18 10a3 3 0 01-3 3m0-6a3 3 0 013 3m0 0a3 3 0 01-3 3m3-3v2m0-2a3 3 0 00-3-3" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+                    </svg>
+                  )}
+                </button>
+
                 {/* Desktop and Tablet user dropdown */}
                 <div 
                   className="hidden sm:block relative" 

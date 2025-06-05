@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Suspense } from "react";
 import "./globals.css";
 import { NavigationLoader } from "@/components/NavigationLoader";
+import { MusicProvider } from "@/components/MusicProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -72,10 +73,12 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning={true}
       >
-        <Suspense fallback={null}>
-          <NavigationLoader />
-        </Suspense>
-        {children}
+        <MusicProvider>
+          <Suspense fallback={null}>
+            <NavigationLoader />
+          </Suspense>
+          {children}
+        </MusicProvider>
       </body>
     </html>
   );

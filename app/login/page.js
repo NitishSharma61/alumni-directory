@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Script from 'next/script'
 import { supabase } from '@/lib/supabase'
+import { useMusicContext } from '@/components/MusicProvider'
 import dynamic from 'next/dynamic'
 
 // Dynamically import FloatingMusicOrb to avoid SSR issues
@@ -20,6 +21,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [recaptchaLoaded, setRecaptchaLoaded] = useState(false)
   const router = useRouter()
+  const { playMusic } = useMusicContext()
 
   // Handle the login form submission
   const handleLogin = async (e) => {
@@ -92,6 +94,9 @@ export default function LoginPage() {
       })
       
       if (error) throw error
+      
+      // Start playing music on successful login
+      await playMusic()
       
       // If successful, redirect to dashboard
       router.push('/dashboard')
