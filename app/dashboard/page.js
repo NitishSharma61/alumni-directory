@@ -7,6 +7,7 @@ import { isAdminEmail } from '@/lib/constants'
 import Link from 'next/link'
 import InstallPrompt from '@/components/InstallPrompt'
 import Header from '@/components/Header'
+import SearchableSelect from '@/components/SearchableSelect'
 
 export default function DashboardPage() {
   // State management remains the same
@@ -115,6 +116,28 @@ export default function DashboardPage() {
     }
   }
 
+  // Generate batch range options (same as signup page)
+  const generateBatchRanges = () => {
+    const ranges = []
+    const currentYear = new Date().getFullYear()
+    
+    // Generate all possible 7-year ranges from current year going backwards
+    for (let startYear = currentYear; startYear >= 1980; startYear--) {
+      const endYear = startYear + 6
+      // Only add if the end year doesn't go too far into future
+      if (endYear <= currentYear + 1) {
+        ranges.push({
+          value: `${startYear}-${endYear}`,
+          label: `${startYear} - ${endYear}`,
+          startYear,
+          endYear
+        })
+      }
+    }
+    
+    return ranges
+  }
+
   const filterAlumni = () => {
     let filtered = alumni
 
@@ -125,10 +148,19 @@ export default function DashboardPage() {
     }
 
     if (batchFilter) {
-      const year = parseInt(batchFilter)
+      // Parse the selected range (e.g., "2017-2022")
+      const [rangeStart, rangeEnd] = batchFilter.split('-').map(year => parseInt(year.trim()))
+      
       filtered = filtered.filter(person => {
-        // Check if the entered year matches either start or end year of the batch
-        return person.batch_start === year || person.batch_end === year
+        // Convert to numbers to ensure proper comparison
+        const personStart = parseInt(person.batch_start)
+        const personEnd = parseInt(person.batch_end)
+        
+        // FIXED: Use exact batch match - only show people from the exact selected batch
+        // This prevents people from other batches appearing in the filtered results
+        const exactMatch = personStart === rangeStart && personEnd === rangeEnd
+        
+        return exactMatch
       })
     }
 
@@ -227,14 +259,16 @@ export default function DashboardPage() {
               <label htmlFor="batch" className="block text-sm font-medium text-secondary mb-2 md:mb-0 md:whitespace-nowrap">
                 Filter by Batch Year
               </label>
-              <input
-                type="number"
-                id="batch"
-                placeholder="Year"
-                className="input w-full"
-                style={{padding: '0.625rem 1rem'}}
+              <SearchableSelect
+                options={[
+                  { value: "", label: "All batches" },
+                  ...generateBatchRanges()
+                ]}
                 value={batchFilter}
                 onChange={(e) => setBatchFilter(e.target.value)}
+                name="batchFilter"
+                placeholder="All batches"
+                className="w-full"
               />
             </div>
 

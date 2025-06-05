@@ -17,28 +17,12 @@ export default function BackgroundMusic({ autoPlay = false }) {
 
     document.addEventListener('click', handleInteraction)
     document.addEventListener('touchstart', handleInteraction)
-    
-    // If user came from login page, they already clicked login button
-    const cameFromLogin = sessionStorage.getItem('justLoggedIn') === 'true'
-    if (cameFromLogin) {
-      setHasInteracted(true)
-      sessionStorage.removeItem('justLoggedIn')
-      
-      // Auto-play music after login
-      if (autoPlay && audioRef.current) {
-        setTimeout(() => {
-          audioRef.current.play().catch(err => {
-            console.log('Audio play failed:', err)
-          })
-        }, 500)
-      }
-    }
 
     return () => {
       document.removeEventListener('click', handleInteraction)
       document.removeEventListener('touchstart', handleInteraction)
     }
-  }, [autoPlay])
+  }, [])
 
   useEffect(() => {
     if (audioRef.current) {

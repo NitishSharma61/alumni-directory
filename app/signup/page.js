@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Script from 'next/script'
 import { supabase } from '@/lib/supabase'
+import SearchableSelect from '@/components/SearchableSelect'
 
 export default function SignupPage() {
   // Form state management - we're tracking all the information new alumni will provide
@@ -43,15 +44,18 @@ export default function SignupPage() {
     const ranges = []
     const currentYear = new Date().getFullYear()
     
-    // Generate ranges from current year going backwards
-    for (let startYear = currentYear - 5; startYear >= 1980; startYear -= 6) {
-      const endYear = startYear + 5
-      ranges.push({
-        value: `${startYear}-${endYear}`,
-        label: `${startYear} - ${endYear}`,
-        startYear,
-        endYear
-      })
+    // Generate all possible 7-year ranges from current year going backwards
+    for (let startYear = currentYear; startYear >= 1980; startYear--) {
+      const endYear = startYear + 6
+      // Only add if the end year doesn't go too far into future
+      if (endYear <= currentYear + 1) {
+        ranges.push({
+          value: `${startYear}-${endYear}`,
+          label: `${startYear} - ${endYear}`,
+          startYear,
+          endYear
+        })
+      }
     }
     
     return ranges
@@ -331,22 +335,15 @@ export default function SignupPage() {
                   <label htmlFor="batchRange" className="text-sm font-medium lg:w-36 lg:flex-shrink-0" style={{color: 'var(--foreground-secondary)'}}>
                     Batch *
                   </label>
-                  <select
-                    id="batchRange"
-                    name="batchRange"
-                    required
-                    className="input w-full"
-                    style={{padding: '0.625rem 1rem'}}
+                  <SearchableSelect
+                    options={generateBatchRanges()}
                     value={formData.batchRange}
                     onChange={handleChange}
-                  >
-                    <option value="">Select your batch</option>
-                    {generateBatchRanges().map((range) => (
-                      <option key={range.value} value={range.value}>
-                        {range.label}
-                      </option>
-                    ))}
-                  </select>
+                    name="batchRange"
+                    placeholder="Select your batch"
+                    className="w-full"
+                    required={true}
+                  />
                 </div>
 
                 {/* Password Input */}

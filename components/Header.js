@@ -7,12 +7,6 @@ import { useRouter, usePathname } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { isAdminEmail } from '@/lib/constants'
 import MobileNav from './MobileNav'
-import dynamic from 'next/dynamic'
-
-// Dynamically import BackgroundMusic to avoid SSR issues
-const BackgroundMusic = dynamic(() => import('./BackgroundMusic'), {
-  ssr: false
-})
 
 export default function Header() {
   const [user, setUser] = useState(null)
@@ -111,13 +105,8 @@ export default function Header() {
             )}
           </div>
 
-          {/* Right side - Music, Admin button and User menu */}
+          {/* Right side - Admin button and User menu */}
           <div className="flex items-center" style={{gap: '1rem'}}>
-            {/* Background Music Button - Only show on dashboard for logged in users */}
-            {user && pathname === '/dashboard' && (
-              <BackgroundMusic autoPlay={true} />
-            )}
-            
             {/* Admin Dashboard Button - Only show for admins */}
             {isAdmin && pathname !== '/admin' && (
               <Link 
@@ -167,7 +156,7 @@ export default function Header() {
                 {/* Profile Button */}
                 <button
                   onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="p-1 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-primary transition-all cursor-pointer"
+                  className="p-1 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-primary transition-all cursor-pointer relative"
                   aria-label="User profile"
                 >
                   <div 
@@ -189,6 +178,21 @@ export default function Header() {
                       profile?.full_name?.charAt(0).toUpperCase() || 'U'
                     )}
                   </div>
+                  
+                  {/* Green online dot - outside the circle */}
+                  <div 
+                    className="absolute"
+                    style={{
+                      bottom: '2px',
+                      right: '2px',
+                      width: '12px',
+                      height: '12px',
+                      background: '#10b981',
+                      borderRadius: '50%',
+                      border: '2px solid white',
+                      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.2)'
+                    }}
+                  />
                 </button>
 
                 {/* Dropdown menu - positioned directly below profile */}

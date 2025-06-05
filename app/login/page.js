@@ -5,6 +5,12 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Script from 'next/script'
 import { supabase } from '@/lib/supabase'
+import dynamic from 'next/dynamic'
+
+// Dynamically import FloatingMusicOrb to avoid SSR issues
+const FloatingMusicOrb = dynamic(() => import('@/components/FloatingMusicOrb'), {
+  ssr: false
+})
 
 export default function LoginPage() {
   // State management for form inputs and UI feedback
@@ -87,8 +93,7 @@ export default function LoginPage() {
       
       if (error) throw error
       
-      // If successful, mark that user just logged in and redirect
-      sessionStorage.setItem('justLoggedIn', 'true')
+      // If successful, redirect to dashboard
       router.push('/dashboard')
     } catch (error) {
       // If there's an error, display it to the user
@@ -105,7 +110,7 @@ export default function LoginPage() {
         onLoad={() => setRecaptchaLoaded(true)}
       />
       <div className="min-h-screen flex items-center justify-center md:p-4" style={{background: 'var(--background-secondary)'}}>
-        <div className="max-w-lg w-full mx-auto min-h-screen md:min-h-0">
+        <div className="max-w-lg w-full mx-auto min-h-screen md:min-h-0 relative">
           <div className="animate-fadeIn h-screen md:h-auto flex flex-col justify-center login-card-mobile" style={{
             background: 'var(--card-background)', 
             borderRadius: 'var(--radius-lg)', 
@@ -128,9 +133,12 @@ export default function LoginPage() {
               <h2 className="text-4xl font-bold" style={{color: 'var(--foreground)', letterSpacing: '-0.02em', marginBottom: '0.75rem'}}>
                 Hami Navodaya Ho
               </h2>
-              <p className="text-lg" style={{color: 'var(--foreground-secondary)'}}>
-                JNV Pandoh Alumni Network
-              </p>
+              <div className="flex items-center justify-center gap-3">
+                <p className="text-lg" style={{color: 'var(--foreground-secondary)'}}>
+                  JNV Pandoh Alumni Network
+                </p>
+                <FloatingMusicOrb />
+              </div>
               <p className="mt-6" style={{color: 'var(--foreground-tertiary)', fontSize: '0.9375rem'}}>
                 Don&apos;t have an account?{' '}
                 <Link href="/signup" className="font-medium transition-colors duration-200" style={{color: 'var(--primary)'}}>

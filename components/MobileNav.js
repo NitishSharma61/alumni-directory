@@ -54,15 +54,32 @@ export default function MobileNav({ user }) {
 
           {/* User Info Section */}
           <div className="mb-6 text-center">
-            <div className="w-16 h-16 rounded-full mx-auto mb-2 overflow-hidden" 
-                 style={{background: user?.user_metadata?.avatar_url ? 'transparent' : 'var(--primary)', color: 'white'}}>
-              {user?.user_metadata?.avatar_url ? (
-                <img src={user.user_metadata.avatar_url} alt="Profile" className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-2xl font-semibold">
-                  {user?.email?.charAt(0).toUpperCase() || 'U'}
-                </div>
-              )}
+            <div className="relative inline-block">
+              <div className="w-16 h-16 rounded-full mx-auto mb-2 overflow-hidden" 
+                   style={{background: user?.user_metadata?.avatar_url ? 'transparent' : 'var(--primary)', color: 'white'}}>
+                {user?.user_metadata?.avatar_url ? (
+                  <img src={user.user_metadata.avatar_url} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-2xl font-semibold">
+                    {user?.email?.charAt(0).toUpperCase() || 'U'}
+                  </div>
+                )}
+              </div>
+              
+              {/* Green online dot - outside the circle */}
+              <div 
+                className="absolute"
+                style={{
+                  bottom: '8px',
+                  right: '0px',
+                  width: '16px',
+                  height: '16px',
+                  background: '#10b981',
+                  borderRadius: '50%',
+                  border: '3px solid white',
+                  boxShadow: '0 1px 3px rgba(0, 0, 0, 0.2)'
+                }}
+              />
             </div>
             <p className="text-sm font-medium" style={{color: 'var(--foreground)'}}>
               {user?.email}

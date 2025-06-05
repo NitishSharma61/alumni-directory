@@ -340,6 +340,31 @@ select.input::-ms-expand {
 select.input option {
   color: var(--foreground);
   background: var(--background);
+  padding: 10px 12px;
+  font-size: 0.9375rem;
+}
+
+/* Enhanced dropdown styling for better UX */
+select.input {
+  /* Ensure smooth scrolling in dropdown */
+  scroll-behavior: smooth;
+  /* Limit dropdown height - browser will add scroll automatically */
+  max-height: 300px;
+}
+
+/* Style for option hover state */
+select.input option:hover,
+select.input option:focus {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+/* Make dropdown more compact */
+select.input option {
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Select specific hover state to preserve dropdown arrow */
