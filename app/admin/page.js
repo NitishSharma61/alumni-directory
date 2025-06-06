@@ -357,6 +357,7 @@ export default function AdminPage() {
                     <th style={{padding: '1rem', textAlign: 'left', fontSize: '0.875rem', fontWeight: '600', color: 'var(--foreground-tertiary)', textTransform: 'uppercase'}}>Alumni</th>
                     <th style={{padding: '1rem', textAlign: 'left', fontSize: '0.875rem', fontWeight: '600', color: 'var(--foreground-tertiary)', textTransform: 'uppercase'}}>Email</th>
                     <th style={{padding: '1rem', textAlign: 'left', fontSize: '0.875rem', fontWeight: '600', color: 'var(--foreground-tertiary)', textTransform: 'uppercase'}}>Mobile</th>
+                    <th style={{padding: '1rem', textAlign: 'left', fontSize: '0.875rem', fontWeight: '600', color: 'var(--foreground-tertiary)', textTransform: 'uppercase'}}>Roll No</th>
                     <th style={{padding: '1rem', textAlign: 'left', fontSize: '0.875rem', fontWeight: '600', color: 'var(--foreground-tertiary)', textTransform: 'uppercase'}}>Batch</th>
                     <th style={{padding: '1rem', textAlign: 'left', fontSize: '0.875rem', fontWeight: '600', color: 'var(--foreground-tertiary)', textTransform: 'uppercase'}}>Applied</th>
                     <th style={{padding: '1rem', textAlign: 'center', fontSize: '0.875rem', fontWeight: '600', color: 'var(--foreground-tertiary)', textTransform: 'uppercase'}}>Actions</th>
@@ -419,6 +420,9 @@ export default function AdminPage() {
                         ) : (
                           <span style={{color: 'var(--foreground-tertiary)', fontStyle: 'italic'}}>Not provided</span>
                         )}
+                      </td>
+                      <td style={{padding: '1rem', color: 'var(--foreground-secondary)', fontSize: '0.875rem'}}>
+                        {alumni.roll_no || <span style={{color: 'var(--foreground-tertiary)', fontStyle: 'italic'}}>Not provided</span>}
                       </td>
                       <td style={{padding: '1rem', color: 'var(--foreground-secondary)', fontSize: '0.875rem'}}>{alumni.batch_start}-{alumni.batch_end}</td>
                       <td style={{padding: '1rem', color: 'var(--foreground-tertiary)', fontSize: '0.875rem'}}>{new Date(alumni.created_at).toLocaleDateString()}</td>
@@ -490,6 +494,7 @@ export default function AdminPage() {
                     <th style={{padding: '1rem', textAlign: 'left', fontSize: '0.875rem', fontWeight: '600', color: 'var(--foreground-tertiary)', textTransform: 'uppercase'}}>Alumni</th>
                     <th style={{padding: '1rem', textAlign: 'left', fontSize: '0.875rem', fontWeight: '600', color: 'var(--foreground-tertiary)', textTransform: 'uppercase'}}>Email</th>
                     <th style={{padding: '1rem', textAlign: 'left', fontSize: '0.875rem', fontWeight: '600', color: 'var(--foreground-tertiary)', textTransform: 'uppercase'}}>Mobile</th>
+                    <th style={{padding: '1rem', textAlign: 'left', fontSize: '0.875rem', fontWeight: '600', color: 'var(--foreground-tertiary)', textTransform: 'uppercase'}}>Roll No</th>
                     <th style={{padding: '1rem', textAlign: 'left', fontSize: '0.875rem', fontWeight: '600', color: 'var(--foreground-tertiary)', textTransform: 'uppercase'}}>Batch</th>
                     <th style={{padding: '1rem', textAlign: 'left', fontSize: '0.875rem', fontWeight: '600', color: 'var(--foreground-tertiary)', textTransform: 'uppercase'}}>Location</th>
                     <th style={{padding: '1rem', textAlign: 'left', fontSize: '0.875rem', fontWeight: '600', color: 'var(--foreground-tertiary)', textTransform: 'uppercase'}}>Approved</th>
@@ -553,6 +558,9 @@ export default function AdminPage() {
                         ) : (
                           <span style={{color: 'var(--foreground-tertiary)', fontStyle: 'italic'}}>Not provided</span>
                         )}
+                      </td>
+                      <td style={{padding: '1rem', color: 'var(--foreground-secondary)', fontSize: '0.875rem'}}>
+                        {alumni.roll_no || <span style={{color: 'var(--foreground-tertiary)', fontStyle: 'italic'}}>Not provided</span>}
                       </td>
                       <td style={{padding: '1rem', color: 'var(--foreground-secondary)', fontSize: '0.875rem'}}>{alumni.batch_start}-{alumni.batch_end}</td>
                       <td style={{padding: '1rem', color: 'var(--foreground-secondary)', fontSize: '0.875rem'}}>

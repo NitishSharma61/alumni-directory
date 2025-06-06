@@ -19,6 +19,7 @@ export default function EditProfilePage() {
     city: '',
     state: '',
     phone: '',
+    roll_no: '',
     photo_url: '',
     bio: '',
     linkedin_url: '',
@@ -72,6 +73,7 @@ export default function EditProfilePage() {
           city: profile.city || '',
           state: profile.state || '',
           phone: profile.phone || '',
+          roll_no: profile.roll_no || '',
           photo_url: profile.photo_url || '',
           bio: profile.bio || '',
           linkedin_url: profile.linkedin_url || '',
@@ -157,6 +159,7 @@ export default function EditProfilePage() {
           city: formData.city.trim() || null,
           state: formData.state.trim() || null,
           phone: formData.phone.trim() || null,
+          roll_no: formData.roll_no.trim() || null,
           photo_url: formData.photo_url || null,
           bio: formData.bio.trim() || null,
           linkedin_url: formData.linkedin_url.trim() || null,
@@ -379,7 +382,7 @@ export default function EditProfilePage() {
                 </div>
 
                 {/* Phone Number */}
-                <div className="flex flex-col lg:flex-row lg:items-start" style={{gap: '0.5rem'}}>
+                <div className="flex flex-col lg:flex-row lg:items-start" style={{gap: '0.5rem', marginBottom: '1.5rem'}}>
                   <label htmlFor="phone" className="text-sm font-medium lg:w-40 lg:flex-shrink-0" style={{color: 'var(--foreground-secondary)'}}>
                     Phone Number
                   </label>
@@ -398,6 +401,23 @@ export default function EditProfilePage() {
                       Your phone number will be visible to other alumni for networking purposes
                     </p>
                   </div>
+                </div>
+
+                {/* Roll Number */}
+                <div className="flex flex-col lg:flex-row lg:items-center" style={{gap: '0.5rem'}}>
+                  <label htmlFor="roll_no" className="text-sm font-medium lg:w-40 lg:flex-shrink-0" style={{color: 'var(--foreground-secondary)'}}>
+                    Roll Number
+                  </label>
+                  <input
+                    type="text"
+                    id="roll_no"
+                    name="roll_no"
+                    value={formData.roll_no}
+                    onChange={handleChange}
+                    className="input w-full"
+                    style={{padding: '0.625rem 1rem'}}
+                    placeholder="Your JNV roll number"
+                  />
                 </div>
               </div>
 

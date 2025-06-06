@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 
 export async function POST(request) {
   try {
-    const { user_id, full_name, email, phone, batch_start, batch_end } = await request.json()
+    const { user_id, full_name, email, phone, roll_no, batch_start, batch_end } = await request.json()
 
     if (!user_id || !full_name || !email) {
       return NextResponse.json(
@@ -39,6 +39,7 @@ export async function POST(request) {
         full_name,
         email,
         phone: phone || null,
+        roll_no: roll_no || null,
         batch_start: batch_start || null,
         batch_end: batch_end || null,
         bio: null,

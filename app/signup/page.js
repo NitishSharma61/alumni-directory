@@ -15,6 +15,7 @@ export default function SignupPage() {
     confirmPassword: '',
     fullName: '',
     phone: '',
+    rollNo: '',
     batchRange: '' // Changed to single batch range field
   })
   const [error, setError] = useState(null)
@@ -46,7 +47,7 @@ export default function SignupPage() {
     
     // Generate all possible 7-year ranges from current year going backwards
     for (let startYear = currentYear; startYear >= 1980; startYear--) {
-      const endYear = startYear + 6
+      const endYear = startYear + 7
       // Only add if the end year doesn't go too far into future
       if (endYear <= currentYear + 1) {
         ranges.push({
@@ -78,6 +79,12 @@ export default function SignupPage() {
     // Validate batch range is selected
     if (!formData.batchRange) {
       setError('Please select your batch')
+      return false
+    }
+
+    // Validate roll number is provided
+    if (!formData.rollNo.trim()) {
+      setError('Please enter your roll number')
       return false
     }
 
@@ -144,6 +151,9 @@ export default function SignupPage() {
           emailRedirectTo: `${window.location.origin}/confirm-email`,
           data: {
             full_name: formData.fullName,
+            phone: formData.phone,
+            roll_no: formData.rollNo,
+            batch_range: formData.batchRange
           }
         }
       })
@@ -168,6 +178,7 @@ export default function SignupPage() {
             full_name: formData.fullName,
             email: formData.email,
             phone: formData.phone.trim() || null,
+            roll_no: formData.rollNo.trim(),
             batch_start: batchStart,
             batch_end: batchEnd,
             bio: null,
@@ -326,6 +337,23 @@ export default function SignupPage() {
                     className="input w-full"
                     placeholder="e.g., +91 9876543210"
                     value={formData.phone}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                {/* Roll Number Input */}
+                <div className="flex flex-col lg:flex-row lg:items-center" style={{gap: '0.5rem', paddingBottom: '1rem'}}>
+                  <label htmlFor="rollNo" className="text-sm font-medium lg:w-36 lg:flex-shrink-0" style={{color: 'var(--foreground-secondary)'}}>
+                    Roll Number *
+                  </label>
+                  <input
+                    id="rollNo"
+                    name="rollNo"
+                    type="text"
+                    required
+                    className="input w-full"
+                    placeholder="Enter your JNV roll number"
+                    value={formData.rollNo}
                     onChange={handleChange}
                   />
                 </div>

@@ -95,6 +95,46 @@ export default function LoginPage() {
       
       if (error) throw error
       
+      // Check if user has a profile
+      const { data: profile, error: profileError } = await supabase
+        .from('alumni_profiles')
+        .select('id')
+        .eq('user_id', data.user.id)
+        .single()
+      
+      // If no profile exists, create one using metadata
+      if (!profile && data.user.user_metadata) {
+        const metadata = data.user.user_metadata
+        
+        // Parse batch range if available
+        let batchStart = null, batchEnd = null
+        if (metadata.batch_range) {
+          const [start, end] = metadata.batch_range.split('-').map(year => parseInt(year.trim()))
+          batchStart = start
+          batchEnd = end
+        }
+        
+        // Create profile using metadata
+        const { error: createError } = await supabase
+          .from('alumni_profiles')
+          .insert({
+            user_id: data.user.id,
+            full_name: metadata.full_name || data.user.email.split('@')[0],
+            email: data.user.email,
+            phone: metadata.phone || null,
+            roll_no: metadata.roll_no || null,
+            batch_start: batchStart,
+            batch_end: batchEnd,
+            bio: null,
+            is_approved: false,
+            created_at: new Date().toISOString(),
+          })
+        
+        if (createError) {
+          console.error('Error creating profile:', createError)
+        }
+      }
+      
       // Start playing music on successful login
       await playMusic()
       

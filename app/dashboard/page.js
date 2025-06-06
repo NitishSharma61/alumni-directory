@@ -123,7 +123,7 @@ export default function DashboardPage() {
     
     // Generate all possible 7-year ranges from current year going backwards
     for (let startYear = currentYear; startYear >= 1980; startYear--) {
-      const endYear = startYear + 6
+      const endYear = startYear + 7
       // Only add if the end year doesn't go too far into future
       if (endYear <= currentYear + 1) {
         ranges.push({
