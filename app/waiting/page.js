@@ -198,8 +198,8 @@ export default function WaitingPage() {
               Thank you for signing up!
             </p>
             <p style={{color: '#805500', fontSize: '1rem'}}>
-              We've received your application and will review it within 24 hours.
-              You'll receive an email once your account is approved.
+              We&apos;ve received your application and will review it within 24 hours.
+              You&apos;ll receive an email once your account is approved.
             </p>
           </div>
 
