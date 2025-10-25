@@ -17,6 +17,7 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true)
   const [processingId, setProcessingId] = useState(null)
   const [notification, setNotification] = useState(null)
+  const [rejectConfirm, setRejectConfirm] = useState(null) // { alumniId, name }
   const router = useRouter()
 
   useEffect(() => {
@@ -49,17 +50,17 @@ export default function AdminPage() {
 
   const fetchUsers = async () => {
     try {
-      // Fetch pending users
+      // Fetch pending users from pending_approval table
       const { data: pending, error: pendingError } = await supabase
-        .from('alumni_profiles')
+        .from('pending_approval')
         .select('*')
-        .eq('is_approved', false)
         .order('created_at', { ascending: false })
 
       if (pendingError) throw pendingError
+
       setPendingUsers(pending || [])
 
-      // Fetch ALL approved users
+      // Fetch ALL approved users from alumni_profiles
       const { data: approved, error: approvedError } = await supabase
         .from('alumni_profiles')
         .select('*')
@@ -129,9 +130,15 @@ export default function AdminPage() {
     setTimeout(() => setNotification(null), 5000)
   }
 
-  const handleReject = async (alumniId) => {
-    if (!confirm('Are you sure you want to reject this user?')) return
-    
+  const handleRejectClick = (alumniId, name) => {
+    setRejectConfirm({ alumniId, name })
+  }
+
+  const handleRejectConfirm = async () => {
+    const alumniId = rejectConfirm?.alumniId
+    if (!alumniId) return
+
+    setRejectConfirm(null)
     setProcessingId(alumniId)
     try {
       // Get the current session token
@@ -197,7 +204,7 @@ export default function AdminPage() {
       
       {/* Notification Toast */}
       {notification && (
-        <div 
+        <div
           className={`fixed top-20 right-4 z-50 animate-fadeIn`}
           style={{
             background: notification.type === 'success' ? '#10b981' : '#ef4444',
@@ -244,7 +251,125 @@ export default function AdminPage() {
           </button>
         </div>
       )}
-      
+
+      {/* Reject Confirmation Modal */}
+      {rejectConfirm && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center animate-fadeIn"
+          style={{
+            background: 'rgba(0, 0, 0, 0.5)',
+            backdropFilter: 'blur(4px)'
+          }}
+          onClick={() => setRejectConfirm(null)}
+        >
+          <div
+            className="animate-fadeInScale"
+            style={{
+              background: 'white',
+              borderRadius: 'var(--radius-lg)',
+              padding: '2rem',
+              maxWidth: '450px',
+              width: '90%',
+              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Warning Icon */}
+            <div style={{
+              width: '60px',
+              height: '60px',
+              borderRadius: '50%',
+              background: 'rgba(239, 68, 68, 0.1)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 1.5rem'
+            }}>
+              <svg className="w-8 h-8" style={{color: 'var(--error)'}} fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+            </div>
+
+            {/* Title */}
+            <h3 style={{
+              fontSize: '1.5rem',
+              fontWeight: '600',
+              color: 'var(--foreground)',
+              textAlign: 'center',
+              marginBottom: '0.75rem'
+            }}>
+              Reject User?
+            </h3>
+
+            {/* Message */}
+            <p style={{
+              color: 'var(--foreground-secondary)',
+              textAlign: 'center',
+              marginBottom: '2rem',
+              lineHeight: '1.6'
+            }}>
+              Are you sure you want to reject <strong>{rejectConfirm.name}</strong>? This action will permanently remove their application.
+            </p>
+
+            {/* Buttons */}
+            <div style={{
+              display: 'flex',
+              gap: '1rem',
+              justifyContent: 'center'
+            }}>
+              <button
+                onClick={() => setRejectConfirm(null)}
+                style={{
+                  padding: '0.75rem 1.5rem',
+                  fontSize: '0.95rem',
+                  fontWeight: '500',
+                  background: 'var(--background-tertiary)',
+                  color: 'var(--foreground)',
+                  border: '1px solid var(--border)',
+                  borderRadius: 'var(--radius-sm)',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.background = 'var(--background-secondary)'
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = 'var(--background-tertiary)'
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleRejectConfirm}
+                style={{
+                  padding: '0.75rem 1.5rem',
+                  fontSize: '0.95rem',
+                  fontWeight: '500',
+                  background: 'var(--error)',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: 'var(--radius-sm)',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.background = '#dc2626'
+                  e.target.style.transform = 'translateY(-1px)'
+                  e.target.style.boxShadow = '0 4px 12px rgba(239, 68, 68, 0.3)'
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = 'var(--error)'
+                  e.target.style.transform = 'translateY(0)'
+                  e.target.style.boxShadow = 'none'
+                }}
+              >
+                Yes, Reject
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Admin Header - Minimal style matching the theme */}
       <div style={{background: 'white', borderBottom: '1px solid var(--border-light)', padding: '1.5rem'}}>
         <div className="modern-container">
@@ -441,7 +566,7 @@ export default function AdminPage() {
                             )}
                           </button>
                           <button
-                            onClick={() => handleReject(alumni.id)}
+                            onClick={() => handleRejectClick(alumni.id, alumni.full_name)}
                             disabled={processingId === alumni.id}
                             style={{
                               padding: '0.375rem 0.75rem',

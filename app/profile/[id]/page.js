@@ -357,7 +357,7 @@ export default function ProfilePage() {
                   flex: 1,
                   fontStyle: alumni.bio ? 'normal' : 'italic'
                 }}>
-                  {alumni.bio || 'This alumni hasn&apos;t added a bio yet.'}
+                  {alumni.bio || 'No bio added yet.'}
                 </p>
               </div>
 

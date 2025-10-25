@@ -16,20 +16,21 @@ const FloatingMusicOrb = dynamic(() => import('@/components/FloatingMusicOrb'), 
 export default function LoginPage() {
   // State management for form inputs and UI feedback
   const [loginIdentifier, setLoginIdentifier] = useState('') // Can be email or mobile
-  const [password, setPassword] = useState('')
   const [error, setError] = useState(null)
+  const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
   const [recaptchaLoaded, setRecaptchaLoaded] = useState(false)
   const router = useRouter()
   const { playMusic } = useMusicContext()
 
-  // Handle the login form submission
+  // Handle the magic link login submission
   const handleLogin = async (e) => {
     e.preventDefault() // Prevent the default form submission behavior
-    
+
     setError(null) // Clear any previous errors
+    setSuccess(false)
     setLoading(true) // Show loading state
-    
+
     try {
       // Execute reCAPTCHA v3
       if (!window.grecaptcha) {
@@ -69,77 +70,84 @@ export default function LoginPage() {
       }
 
       // Check if loginIdentifier is email or mobile
-      let email = loginIdentifier
-      
+      let email = loginIdentifier.trim()
+      let foundInDatabase = false
+
       // If it looks like a mobile number, find the email from database
-      if (/^\+?[0-9\s\-()]+$/.test(loginIdentifier.trim())) {
-        // It's a mobile number, fetch the corresponding email
-        const { data: profileData, error: profileError } = await supabase
+      if (/^\+?[0-9\s\-()]+$/.test(email)) {
+        // It's a mobile number, check alumni_profiles first
+        const { data: approvedProfile } = await supabase
           .from('alumni_profiles')
           .select('email')
-          .eq('phone', loginIdentifier.trim())
+          .eq('phone', email)
           .single()
-        
-        if (profileError || !profileData) {
-          throw new Error('Mobile number not found or not registered')
+
+        if (approvedProfile) {
+          email = approvedProfile.email
+          foundInDatabase = true
+        } else {
+          // Check pending_approval
+          const { data: pendingProfile } = await supabase
+            .from('pending_approval')
+            .select('email')
+            .eq('phone', email)
+            .single()
+
+          if (pendingProfile) {
+            email = pendingProfile.email
+            foundInDatabase = true
+          } else {
+            throw new Error('Mobile number not found. Please sign up first.')
+          }
         }
-        
-        email = profileData.email
+      } else {
+        // It's an email, validate it exists in database
+        const emailLower = email.toLowerCase()
+
+        // Check alumni_profiles
+        const { data: approvedProfile } = await supabase
+          .from('alumni_profiles')
+          .select('email')
+          .eq('email', emailLower)
+          .single()
+
+        if (approvedProfile) {
+          email = approvedProfile.email
+          foundInDatabase = true
+        } else {
+          // Check pending_approval
+          const { data: pendingProfile } = await supabase
+            .from('pending_approval')
+            .select('email')
+            .eq('email', emailLower)
+            .single()
+
+          if (pendingProfile) {
+            email = pendingProfile.email
+            foundInDatabase = true
+          } else {
+            throw new Error('Email not found. Please sign up first.')
+          }
+        }
       }
 
-      // If reCAPTCHA passed, attempt to sign in with Supabase using email
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
-      
-      if (error) throw error
-      
-      // Check if user has a profile
-      const { data: profile, error: profileError } = await supabase
-        .from('alumni_profiles')
-        .select('id')
-        .eq('user_id', data.user.id)
-        .single()
-      
-      // If no profile exists, create one using metadata
-      if (!profile && data.user.user_metadata) {
-        const metadata = data.user.user_metadata
-        
-        // Parse batch range if available
-        let batchStart = null, batchEnd = null
-        if (metadata.batch_range) {
-          const [start, end] = metadata.batch_range.split('-').map(year => parseInt(year.trim()))
-          batchStart = start
-          batchEnd = end
-        }
-        
-        // Create profile using metadata
-        const { error: createError } = await supabase
-          .from('alumni_profiles')
-          .insert({
-            user_id: data.user.id,
-            full_name: metadata.full_name || data.user.email.split('@')[0],
-            email: data.user.email,
-            phone: metadata.phone || null,
-            roll_no: metadata.roll_no || null,
-            batch_start: batchStart,
-            batch_end: batchEnd,
-            bio: null,
-            is_approved: false,
-            created_at: new Date().toISOString(),
-          })
-        
-        if (createError) {
-          console.error('Error creating profile:', createError)
-        }
+      if (!foundInDatabase) {
+        throw new Error('Account not found. Please sign up first.')
       }
-      
-      // Start playing music on successful login
-      await playMusic()
-      
-      // If successful, redirect to dashboard
-      router.push('/dashboard')
+
+      // Send magic link to email
+      const { error } = await supabase.auth.signInWithOtp({
+        email: email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/confirm-email`,
+        }
+      })
+
+      if (error) throw error
+
+      // Show success message
+      setSuccess(true)
+
     } catch (error) {
       // If there's an error, display it to the user
       setError(error.message)
@@ -199,12 +207,21 @@ export default function LoginPage() {
                   <p className="text-center font-medium" style={{color: 'var(--error)'}}>{error}</p>
                 </div>
               )}
-              
-              <div className="space-y-6">
+
+              {/* Success message display */}
+              {success && (
+                <div style={{background: 'rgba(0, 200, 150, 0.08)', border: '1px solid rgba(0, 200, 150, 0.2)', borderRadius: 'var(--radius-sm)', padding: '1rem', marginBottom: '1.5rem'}}>
+                  <p className="text-center font-medium" style={{color: 'var(--success)'}}>
+                    Magic link sent! Check your email to login.
+                  </p>
+                </div>
+              )}
+
+              <div>
                 {/* Email or Mobile input field */}
-                <div className="flex flex-col lg:flex-row lg:items-center" style={{gap: '0.5rem', paddingBottom: '0.5rem'}}>
-                  <label htmlFor="loginIdentifier" className="text-sm font-medium lg:w-24 lg:flex-shrink-0" style={{color: 'var(--foreground-secondary)'}}>
-                    Email/Mobile
+                <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
+                  <label htmlFor="loginIdentifier" className="text-sm font-medium" style={{color: 'var(--foreground-secondary)', minWidth: '50px'}}>
+                    Email
                   </label>
                   <input
                     id="loginIdentifier"
@@ -212,28 +229,12 @@ export default function LoginPage() {
                     type="text"
                     autoComplete="username"
                     required
-                    className="input w-full"
-                    placeholder="Enter email or mobile number"
+                    className="input"
+                    placeholder="Enter your email address"
                     value={loginIdentifier}
                     onChange={(e) => setLoginIdentifier(e.target.value)}
-                  />
-                </div>
-                
-                {/* Password input field */}
-                <div className="flex flex-col lg:flex-row lg:items-center" style={{gap: '0.5rem', paddingBottom: '0.5rem'}}>
-                  <label htmlFor="password" className="text-sm font-medium lg:w-24 lg:flex-shrink-0" style={{color: 'var(--foreground-secondary)'}}>
-                    Password
-                  </label>
-                  <input
-                    id="password"
-                    name="password"
-                    type="password"
-                    autoComplete="current-password"
-                    required
-                    className="input w-full"
-                    placeholder="Enter your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={success}
+                    style={{flex: 1}}
                   />
                 </div>
               </div>
@@ -242,30 +243,28 @@ export default function LoginPage() {
               <div className="flex justify-center" style={{paddingTop: '1rem'}}>
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={loading || success}
                   className="btn-primary disabled:opacity-60 disabled:cursor-not-allowed"
                   style={{padding: '0.75rem 2rem'}}
                 >
                   {loading ? (
                     <div className="flex items-center justify-center">
                       <div className="loading mr-3"></div>
-                      Signing in...
+                      Sending magic link...
                     </div>
+                  ) : success ? (
+                    'Magic link sent!'
                   ) : (
-                    'Sign In'
+                    'Send Magic Link'
                   )}
                 </button>
               </div>
 
-              {/* Forgot Password Link */}
+              {/* Info text */}
               <div className="text-center" style={{paddingTop: '1rem'}}>
-                <Link 
-                  href="/forgot-password" 
-                  className="text-sm font-medium transition-colors duration-200" 
-                  style={{color: 'var(--primary)'}}
-                >
-                  Forgot your password?
-                </Link>
+                <p className="text-sm" style={{color: 'var(--foreground-tertiary)'}}>
+                  We&apos;ll send you a magic link to login without a password
+                </p>
               </div>
             </form>
           </div>

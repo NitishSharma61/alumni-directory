@@ -11,8 +11,6 @@ export default function SignupPage() {
   // Form state management - we're tracking all the information new alumni will provide
   const [formData, setFormData] = useState({
     email: '',
-    password: '',
-    confirmPassword: '',
     fullName: '',
     phone: '',
     rollNo: '',
@@ -64,18 +62,6 @@ export default function SignupPage() {
 
   // This function checks if all the data is valid before we send it to Supabase
   const validateForm = () => {
-    // Check if passwords match
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match')
-      return false
-    }
-
-    // Check password length (Supabase requires at least 6 characters)
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters long')
-      return false
-    }
-
     // Validate batch range is selected
     if (!formData.batchRange) {
       setError('Please select your batch')
@@ -85,6 +71,18 @@ export default function SignupPage() {
     // Validate roll number is provided
     if (!formData.rollNo.trim()) {
       setError('Please enter your roll number')
+      return false
+    }
+
+    // Validate email is provided
+    if (!formData.email.trim()) {
+      setError('Please enter your email')
+      return false
+    }
+
+    // Validate full name is provided
+    if (!formData.fullName.trim()) {
+      setError('Please enter your full name')
       return false
     }
 
@@ -143,54 +141,54 @@ export default function SignupPage() {
         throw new Error(recaptchaData.message || 'reCAPTCHA verification failed')
       }
 
-      // If reCAPTCHA passed, create the authentication account in Supabase
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: formData.email,
-        password: formData.password,
+      // Check if email already exists in pending_approval or alumni_profiles
+      const emailLower = formData.email.toLowerCase().trim()
+
+      const { data: pendingCheck } = await supabase
+        .from('pending_approval')
+        .select('email')
+        .eq('email', emailLower)
+        .single()
+
+      if (pendingCheck) {
+        throw new Error('Email already pending approval. Please check your email for the magic link.')
+      }
+
+      const { data: profileCheck } = await supabase
+        .from('alumni_profiles')
+        .select('email')
+        .eq('email', emailLower)
+        .single()
+
+      if (profileCheck) {
+        throw new Error('Email already registered. Please login instead.')
+      }
+
+      // Parse batch range
+      const [batchStart, batchEnd] = formData.batchRange.split('-').map(year => parseInt(year.trim()))
+
+      // Store signup data temporarily in localStorage (for after OTP verification)
+      localStorage.setItem('pendingSignupData', JSON.stringify({
+        email: emailLower,
+        fullName: formData.fullName.trim(),
+        phone: formData.phone.trim() || null,
+        rollNo: formData.rollNo.trim(),
+        batchStart,
+        batchEnd
+      }))
+
+      // Send magic link for signup
+      const { error: otpError } = await supabase.auth.signInWithOtp({
+        email: emailLower,
         options: {
-          emailRedirectTo: `${window.location.origin}/confirm-email`,
-          data: {
-            full_name: formData.fullName,
-            phone: formData.phone,
-            roll_no: formData.rollNo,
-            batch_range: formData.batchRange
-          }
+          emailRedirectTo: `${window.location.origin}/confirm-email?signup=true`
         }
       })
-      
-      if (authError) throw authError
-      
-      // Step 2: Create the alumni profile with additional information
-      // Note: This will only work if email confirmation is disabled in Supabase
-      // If email confirmation is enabled, this profile creation will happen after email confirmation
-      if (authData.user && !authData.user.email_confirmed_at) {
-        // Email confirmation is required - show success message without creating profile yet
-        router.push('/signup?confirmation=sent')
-      } else if (authData.user) {
-        // Email confirmation is disabled - create profile immediately
-        // Parse batch range to get start and end years
-        const [batchStart, batchEnd] = formData.batchRange.split('-').map(year => parseInt(year.trim()))
-        
-        const { error: profileError } = await supabase
-          .from('alumni_profiles')
-          .insert({
-            user_id: authData.user.id,
-            full_name: formData.fullName,
-            email: formData.email,
-            phone: formData.phone.trim() || null,
-            roll_no: formData.rollNo.trim(),
-            batch_start: batchStart,
-            batch_end: batchEnd,
-            bio: null,
-            is_approved: false,
-            created_at: new Date().toISOString(),
-          })
-        
-        if (profileError) throw profileError
-        
-        // Success! Redirect to login page
-        router.push('/login?signup=success')
-      }
+
+      if (otpError) throw otpError
+
+      // Show success message
+      router.push('/signup?confirmation=sent')
     } catch (error) {
       setError(error.message)
     } finally {
@@ -231,10 +229,10 @@ export default function SignupPage() {
                 Check Your Email
               </h2>
               <p className="text-lg mb-6" style={{color: 'var(--foreground-secondary)'}}>
-                We&apos;ve sent a confirmation email to <strong>{formData.email}</strong>
+                We&apos;ve sent a magic link to <strong>{formData.email}</strong>
               </p>
               <p className="text-sm mb-8" style={{color: 'var(--foreground-tertiary)'}}>
-                Please check your email and click the confirmation link to activate your account. The link will expire in 24 hours.
+                Please check your email and click the magic link to complete your registration and login. The link will expire in 1 hour.
               </p>
               
               <div className="space-y-4">
@@ -373,42 +371,13 @@ export default function SignupPage() {
                     required={true}
                   />
                 </div>
+              </div>
 
-                {/* Password Input */}
-                <div className="flex flex-col lg:flex-row lg:items-center" style={{gap: '0.5rem', paddingBottom: '1rem'}}>
-                  <label htmlFor="password" className="text-sm font-medium lg:w-36 lg:flex-shrink-0" style={{color: 'var(--foreground-secondary)'}}>
-                    Password *
-                  </label>
-                  <input
-                    id="password"
-                    name="password"
-                    type="password"
-                    autoComplete="new-password"
-                    required
-                    className="input w-full"
-                    placeholder="At least 6 characters"
-                    value={formData.password}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                {/* Confirm Password Input */}
-                <div className="flex flex-col lg:flex-row lg:items-center" style={{gap: '0.5rem', paddingBottom: '1rem'}}>
-                  <label htmlFor="confirmPassword" className="text-sm font-medium lg:w-36 lg:flex-shrink-0" style={{color: 'var(--foreground-secondary)'}}>
-                    Confirm Password *
-                  </label>
-                  <input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type="password"
-                    autoComplete="new-password"
-                    required
-                    className="input w-full"
-                    placeholder="Re-enter your password"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                  />
-                </div>
+              {/* Info text */}
+              <div className="text-center" style={{paddingTop: '0.5rem', paddingBottom: '0.5rem'}}>
+                <p className="text-sm" style={{color: 'var(--foreground-tertiary)'}}>
+                  We&apos;ll send you a magic link to complete your registration
+                </p>
               </div>
 
               {/* Submit Button */}
@@ -422,10 +391,10 @@ export default function SignupPage() {
                   {loading ? (
                     <div className="flex items-center justify-center">
                       <div className="loading mr-3"></div>
-                      Creating account...
+                      Sending magic link...
                     </div>
                   ) : (
-                    'Create Account'
+                    'Send Magic Link'
                   )}
                 </button>
               </div>

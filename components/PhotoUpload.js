@@ -1,13 +1,14 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { supabase } from '@/lib/supabase'
 
-export default function PhotoUpload({ currentPhotoUrl, userId, onPhotoUploaded, onPhotoClick }) {
+export default function PhotoUpload({ currentPhotoUrl, userId, onPhotoUploaded, onPhotoClick, tableName = 'alumni_profiles' }) {
   // State to manage the upload process and preview
   const [uploading, setUploading] = useState(false)
   const [previewUrl, setPreviewUrl] = useState(currentPhotoUrl)
   const [error, setError] = useState(null)
+  const fileInputRef = useRef(null)
 
   // Handle file selection and upload
   const handleFileSelect = async (event) => {
@@ -61,12 +62,14 @@ export default function PhotoUpload({ currentPhotoUrl, userId, onPhotoUploaded, 
         .getPublicUrl(filePath)
 
       // Update the user's profile with the new photo URL
+      const updateData = { photo_url: publicUrl }
+      if (tableName === 'alumni_profiles') {
+        updateData.updated_at = new Date().toISOString()
+      }
+
       const { error: updateError } = await supabase
-        .from('alumni_profiles')
-        .update({ 
-          photo_url: publicUrl,
-          updated_at: new Date().toISOString()
-        })
+        .from(tableName)
+        .update(updateData)
         .eq('user_id', userId)
 
       if (updateError) {
@@ -97,12 +100,14 @@ export default function PhotoUpload({ currentPhotoUrl, userId, onPhotoUploaded, 
       setError(null)
 
       // Update profile to remove photo URL
+      const updateData = { photo_url: null }
+      if (tableName === 'alumni_profiles') {
+        updateData.updated_at = new Date().toISOString()
+      }
+
       const { error: updateError } = await supabase
-        .from('alumni_profiles')
-        .update({ 
-          photo_url: null,
-          updated_at: new Date().toISOString()
-        })
+        .from(tableName)
+        .update(updateData)
         .eq('user_id', userId)
 
       if (updateError) {
@@ -110,7 +115,12 @@ export default function PhotoUpload({ currentPhotoUrl, userId, onPhotoUploaded, 
       }
 
       setPreviewUrl(null)
-      
+
+      // Clear the file input field
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+
       // Notify parent component
       if (onPhotoUploaded) {
         onPhotoUploaded(null)
@@ -132,9 +142,9 @@ export default function PhotoUpload({ currentPhotoUrl, userId, onPhotoUploaded, 
         <div className="relative">
           <div className="rounded-full overflow-hidden flex items-center justify-center" style={{width: '120px', height: '120px', background: 'var(--background-tertiary)', border: '3px solid var(--border-light)'}}>
             {previewUrl ? (
-              <img 
-                src={previewUrl} 
-                alt="Profile" 
+              <img
+                src={previewUrl}
+                alt="Profile"
                 className="w-full h-full object-cover"
                 style={{
                   cursor: 'pointer',
@@ -158,7 +168,45 @@ export default function PhotoUpload({ currentPhotoUrl, userId, onPhotoUploaded, 
               </svg>
             )}
           </div>
-          
+
+          {/* Remove photo button - X icon on top right of image */}
+          {previewUrl && !uploading && (
+            <button
+              type="button"
+              onClick={handleRemovePhoto}
+              className="absolute"
+              style={{
+                top: '-4px',
+                right: '-4px',
+                width: '32px',
+                height: '32px',
+                borderRadius: '50%',
+                background: 'var(--error)',
+                color: 'white',
+                border: '2px solid white',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                fontSize: '18px',
+                fontWeight: 'bold',
+                transition: 'all 0.2s ease',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.transform = 'scale(1.1)';
+                e.target.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.25)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.transform = 'scale(1)';
+                e.target.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.15)';
+              }}
+              title="Remove photo"
+            >
+              ×
+            </button>
+          )}
+
           {/* Loading overlay */}
           {uploading && (
             <div className="absolute inset-0 rounded-full flex items-center justify-center" style={{background: 'rgba(255, 255, 255, 0.9)'}}>
@@ -172,6 +220,7 @@ export default function PhotoUpload({ currentPhotoUrl, userId, onPhotoUploaded, 
           <label className="block">
             <span className="sr-only">Choose profile photo</span>
             <input
+              ref={fileInputRef}
               type="file"
               accept="image/*"
               onChange={handleFileSelect}
@@ -189,18 +238,6 @@ export default function PhotoUpload({ currentPhotoUrl, userId, onPhotoUploaded, 
               }}
             />
           </label>
-          
-          {previewUrl && (
-            <button
-              type="button"
-              onClick={handleRemovePhoto}
-              disabled={uploading}
-              className="text-sm disabled:opacity-50 transition-colors font-medium"
-              style={{color: 'var(--error)'}}
-            >
-              Remove photo
-            </button>
-          )}
         </div>
       </div>
 

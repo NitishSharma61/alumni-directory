@@ -25,21 +25,46 @@ export async function POST(request) {
     // Create Supabase client with service role key for admin operations
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-    
+
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
-    // Delete the alumni profile
-    const { error } = await supabase
-      .from('alumni_profiles')
+    // Step 1: Fetch the pending user to get user_id
+    const { data: pendingUser, error: fetchError } = await supabase
+      .from('pending_approval')
+      .select('user_id')
+      .eq('id', alumniId)
+      .single()
+
+    if (fetchError || !pendingUser) {
+      console.error('Error fetching pending user:', fetchError)
+      return NextResponse.json(
+        { error: 'Pending user not found' },
+        { status: 404 }
+      )
+    }
+
+    // Step 2: Delete from pending_approval table
+    const { error: deleteError } = await supabase
+      .from('pending_approval')
       .delete()
       .eq('id', alumniId)
 
-    if (error) {
-      console.error('Error rejecting user:', error)
+    if (deleteError) {
+      console.error('Error deleting from pending_approval:', deleteError)
       return NextResponse.json(
         { error: 'Failed to reject user' },
         { status: 500 }
       )
+    }
+
+    // Step 3: Delete the auth user
+    const { error: authDeleteError } = await supabase.auth.admin.deleteUser(
+      pendingUser.user_id
+    )
+
+    if (authDeleteError) {
+      console.error('Error deleting auth user:', authDeleteError)
+      // Don't fail the rejection if auth deletion fails - user is already removed from pending
     }
 
     return NextResponse.json({ success: true })

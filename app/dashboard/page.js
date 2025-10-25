@@ -35,29 +35,45 @@ export default function DashboardPage() {
   const checkUser = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser()
-      
+
       if (!user) {
         router.push('/login')
         return
       }
-      
+
       setUser(user)
       const adminStatus = isAdminEmail(user.email)
       setIsAdmin(adminStatus)
-      
+
       // Fetch current user's profile to check approval status
       const { data: profile } = await supabase
         .from('alumni_profiles')
         .select('*')
         .eq('user_id', user.id)
         .single()
-      
+
       if (profile) {
         setCurrentUserProfile(profile)
+        // Now fetch alumni with correct admin status
+        await fetchAlumniWithAdminStatus(adminStatus)
+      } else {
+        // Check if user is in pending_approval
+        const { data: pendingProfile } = await supabase
+          .from('pending_approval')
+          .select('id')
+          .eq('user_id', user.id)
+          .single()
+
+        if (pendingProfile) {
+          // User is pending approval, redirect to waiting page
+          router.push('/waiting')
+          return
+        } else {
+          // User not found in either table, redirect to signup
+          router.push('/signup')
+          return
+        }
       }
-      
-      // Now fetch alumni with correct admin status
-      await fetchAlumniWithAdminStatus(adminStatus)
     } catch (error) {
       console.error('Error checking user:', error)
       router.push('/login')

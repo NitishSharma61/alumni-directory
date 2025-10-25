@@ -967,6 +967,33 @@ nextjs-portal {
   transform: scale(1.1);
 }
 
+/* ===== WAITING PAGE RESPONSIVE GRID ===== */
+
+.waiting-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+/* Large screens: side-by-side layout */
+@media (min-width: 1024px) {
+  .waiting-grid {
+    grid-template-columns: 1fr 1.5fr;
+    align-items: start;
+  }
+}
+
+/* Mobile: reduce padding for small screens */
+@media (max-width: 768px) {
+  .waiting-grid > div {
+    padding: 1.5rem !important;
+  }
+
+  .waiting-grid h2 {
+    font-size: 1.75rem !important;
+  }
+}
+
 /* ===== NAVIGATION LOADER STYLES ===== */
 
 .navigation-loader {

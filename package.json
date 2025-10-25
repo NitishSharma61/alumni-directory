@@ -13,8 +13,8 @@
   "dependencies": {
     "@aws-sdk/client-ses": "^3.821.0",
     "@supabase/ssr": "^0.6.1",
-    "@supabase/supabase-js": "^2.49.8",
-    "dotenv": "^16.5.0",
+    "@supabase/supabase-js": "^2.75.1",
+    "dotenv": "^16.6.1",
     "next": "15.3.2",
     "next-pwa": "^5.6.0",
     "react": "^19.0.0",
